@@ -40,7 +40,7 @@ const ResourcesPage: React.FC = () => {
     {
       id: 1,
       title: "Patient Bill of Rights",
-      description: "Comprehensive guide to understanding your legal rights as a patient in healthcare settings.",
+      description: "A comprehensive guide to your legal and ethical rights as a patient in any healthcare setting, including hospitals, clinics, and long-term care facilities.",
       category: "patient-rights",
       image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
       featured: true
@@ -128,13 +128,13 @@ const ResourcesPage: React.FC = () => {
     {
       id: 1,
       question: "Do I have the right to see my medical records?",
-      answer: "Yes, under HIPAA (Health Insurance Portability and Accountability Act), you have the legal right to access and obtain copies of your medical records. Healthcare providers must provide these records within 30 days of your request, though they may charge a reasonable fee for copying and mailing. Some providers offer electronic access through patient portals.",
+      answer: "Yes, under HIPAA (Health Insurance Portability and Accountability Act), you have the legal right to access and obtain copies of your medical records. Healthcare providers must provide these records within 30 days of your request, though they may charge a reasonable fee for copying and mailing. You also have the right to request corrections to your records if you believe there are errors. Some providers offer electronic access through patient portals for easier viewing.",
       category: "medical-records"
     },
     {
       id: 2,
       question: "Can I refuse a treatment my doctor recommends?",
-      answer: "Yes, as an adult with decision-making capacity, you have the right to refuse any medical treatment, even if it's life-saving. This is part of the principle of informed consent. Your healthcare provider should explain the risks and benefits of refusing treatment, but the final decision is yours. It's advisable to discuss your concerns thoroughly with your healthcare team before making such decisions.",
+      answer: "Yes, as an adult with decision-making capacity, you have the right to refuse any medical treatment, even if it's life-saving. This is part of the principle of informed consent. Your healthcare provider should explain the risks and benefits of refusing treatment, but the final decision is yours. Healthcare facilities should provide you with information about potential outcomes of your decision to help you make an informed choice. It's advisable to discuss your concerns thoroughly with your healthcare team before making such decisions.",
       category: "patient-rights"
     },
     {
@@ -164,7 +164,7 @@ const ResourcesPage: React.FC = () => {
     {
       id: 7,
       question: "What rights do I have regarding my privacy in healthcare settings?",
-      answer: "Under HIPAA, you have the right to privacy regarding your medical information. Healthcare providers can only share your information for treatment, payment, or healthcare operations without your explicit permission. You can request restrictions on how your information is used or disclosed, though providers aren't always required to agree. You're entitled to receive a notice of privacy practices from healthcare organizations. You can also request an accounting of disclosures of your medical information.",
+      answer: "Under HIPAA, you have the right to privacy regarding your medical information. Healthcare providers can only share your information for treatment, payment, or healthcare operations without your explicit permission. You can request restrictions on how your information is used or disclosed, though providers aren't always required to agree. You're entitled to receive a notice of privacy practices from healthcare organizations. You have the right to access your own records, request corrections, and receive an accounting of disclosures of your medical information. Additionally, you can file a complaint if you believe your privacy rights have been violated.",
       category: "patient-rights"
     },
     {
@@ -172,7 +172,13 @@ const ResourcesPage: React.FC = () => {
       question: "How do I check if a doctor or hospital is in my insurance network?",
       answer: "To verify if a provider is in-network, check your insurance company's online directory or call their customer service. Contact the provider directly to confirm their current network status with your specific plan. When scheduling appointments, verify network status again and request the provider's NPI (National Provider Identifier) to document the confirmation. Be aware that network status can change, so it's best to check shortly before receiving services.",
       category: "insurance"
-    }
+    },
+    {
+      id: 9,
+      question: "What are advance directives and why do I need them?",
+      answer: "Advance directives are legal documents that outline your healthcare preferences if you become unable to make decisions for yourself. They include living wills (which specify your wishes for end-of-life care) and healthcare powers of attorney (which designate someone to make decisions on your behalf). These documents ensure your wishes are honored even if you can't communicate them, reduce family conflicts about your care, and provide clear guidance to healthcare providers. You have the right to create advance directives, and healthcare facilities are required to ask if you have them and to honor them within legal limits.",
+      category: "patient-rights"
+    },
   ];
 
   useEffect(() => {
@@ -282,28 +288,43 @@ const ResourcesPage: React.FC = () => {
             
             <ul className={styles.detailList}>
               <li className={styles.detailListItem}>
+                <strong>Right to Respectful Care:</strong> You have the right to considerate, respectful care that recognizes your personal dignity, cultural and religious values, and individual needs at all times.
+              </li>
+              <li className={styles.detailListItem}>
+                <strong>Right to Information:</strong> You have the right to receive complete, current information about your diagnosis, treatment, and prognosis in terms you can understand.
+              </li>
+              <li className={styles.detailListItem}>
                 <strong>Right to Informed Consent:</strong> You have the right to receive clear information about your diagnosis, treatment options, risks, benefits, and alternatives before consenting to any procedure or treatment.
+              </li>
+              <li className={styles.detailListItem}>
+                <strong>Right to Participate in Decisions:</strong> You have the right to participate in decisions regarding your healthcare and to receive enough information to make informed choices.
               </li>
               <li className={styles.detailListItem}>
                 <strong>Right to Privacy and Confidentiality:</strong> Your medical information is protected under HIPAA. Healthcare providers must maintain the confidentiality of your records and obtain your permission before sharing information.
               </li>
               <li className={styles.detailListItem}>
-                <strong>Right to Access Your Medical Records:</strong> You have the right to view, obtain copies of, and request corrections to your medical records.
+                <strong>Right to Access Your Medical Records:</strong> You have the right to review and obtain copies of your medical records, and to request amendments to ensure accuracy.
               </li>
               <li className={styles.detailListItem}>
                 <strong>Right to Refuse Treatment:</strong> You can decline any recommended treatment or procedure, even if it's life-saving, as long as you have decision-making capacity.
               </li>
               <li className={styles.detailListItem}>
-                <strong>Right to Respect and Dignity:</strong> You deserve to be treated with respect and consideration, free from discrimination based on age, gender, race, ethnicity, religion, sexual orientation, or disability.
+                <strong>Right to Advance Directives:</strong> You have the right to create advance directives (such as a living will or healthcare power of attorney) and to have healthcare providers honor these directives.
               </li>
               <li className={styles.detailListItem}>
                 <strong>Right to Emergency Care:</strong> Under the Emergency Medical Treatment and Labor Act (EMTALA), you have the right to receive emergency medical screening and stabilization regardless of your ability to pay.
               </li>
               <li className={styles.detailListItem}>
-                <strong>Right to Make Advance Directives:</strong> You can create legal documents that specify your healthcare preferences if you become unable to make decisions.
+                <strong>Right to Pain Management:</strong> You have the right to appropriate assessment and management of pain, including access to pain relief measures.
               </li>
               <li className={styles.detailListItem}>
                 <strong>Right to Know Provider Credentials:</strong> You can request information about your healthcare provider's education, training, experience, and certifications.
+              </li>
+              <li className={styles.detailListItem}>
+                <strong>Right to Non-Discrimination:</strong> You have the right to receive care without discrimination based on race, ethnicity, national origin, religion, sex, age, mental or physical disability, sexual orientation, gender identity, or source of payment.
+              </li>
+              <li className={styles.detailListItem}>
+                <strong>Right to Visitors:</strong> You have the right to receive visitors of your choosing, including a spouse, domestic partner, family member, or friend, and the right to withdraw or deny consent at any time.
               </li>
             </ul>
           </div>
@@ -384,6 +405,21 @@ const ResourcesPage: React.FC = () => {
               <li className={styles.detailListItem}>
                 <a href="https://www.jointcommission.org/resources/patient-safety-topics/patient-rights/" target="_blank" rel="noopener noreferrer" className={styles.externalLink}>
                   The Joint Commission - Patient Rights
+                </a>
+              </li>
+              <li className={styles.detailListItem}>
+                <a href="https://www.aha.org/advancing-health-in-america/voice-patients-health-care/patient-bill-rights" target="_blank" rel="noopener noreferrer" className={styles.externalLink}>
+                  American Hospital Association - Patient Bill of Rights
+                </a>
+              </li>
+              <li className={styles.detailListItem}>
+                <a href="https://www.cms.gov/outreach-and-education/medicare-learning-network-mln/mlnproducts/downloads/hospital-discharge-rights-message.pdf" target="_blank" rel="noopener noreferrer" className={styles.externalLink}>
+                  Centers for Medicare & Medicaid Services - Hospital Discharge Rights
+                </a>
+              </li>
+              <li className={styles.detailListItem}>
+                <a href="https://www.caringinfo.org/planning/advance-directives/understanding-advance-directives/" target="_blank" rel="noopener noreferrer" className={styles.externalLink}>
+                  CaringInfo - Understanding Advance Directives
                 </a>
               </li>
             </ul>

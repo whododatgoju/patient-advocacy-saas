@@ -1,0 +1,254 @@
+.patternVisualizerContainer {
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: var(--spacing-5);
+  margin-bottom: var(--spacing-6);
+}
+
+.timeRangeSelector {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+}
+
+.timeRangeButton {
+  padding: var(--spacing-1) var(--spacing-3);
+  background-color: var(--color-gray-100);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  color: var(--color-gray-700);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timeRangeButton:hover {
+  background-color: var(--color-gray-200);
+}
+
+.activeTimeRange {
+  background-color: var(--color-primary-lightest);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.chartContainer {
+  display: flex;
+  height: 300px;
+  margin-bottom: var(--spacing-4);
+  position: relative;
+}
+
+.yAxisLabels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 60px;
+  padding-right: var(--spacing-2);
+  font-size: 0.75rem;
+  color: var(--color-gray-600);
+}
+
+.yAxisLabels div {
+  text-align: right;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.chartContent {
+  flex: 1;
+  position: relative;
+  border-left: 1px solid var(--color-gray-300);
+  border-bottom: 1px solid var(--color-gray-300);
+  overflow: hidden;
+}
+
+.gridLines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.gridLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--color-gray-200);
+}
+
+.xAxisLabels {
+  position: absolute;
+  bottom: -25px;
+  left: 0;
+  right: 0;
+  height: 20px;
+}
+
+.xAxisLabel {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: var(--color-gray-600);
+  white-space: nowrap;
+}
+
+.symptomLine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.dataPoint {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid;
+  transform: translate(-50%, 50%);
+  z-index: 2;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.connectionLine {
+  position: absolute;
+  height: 2px;
+  transform-origin: left center;
+  z-index: 1;
+  border-top: 2px dashed;
+}
+
+.legendContainer {
+  display: flex;
+  align-items: center;
+  margin-top: var(--spacing-6);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.legendTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+  margin-right: var(--spacing-3);
+}
+
+.legendItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--color-gray-300);
+}
+
+.legendLabel {
+  font-size: 0.875rem;
+  color: var(--color-gray-700);
+}
+
+.severityLegend {
+  display: flex;
+  align-items: center;
+  margin-top: var(--spacing-3);
+}
+
+.severityScale {
+  display: flex;
+  height: 12px;
+  width: 200px;
+  margin: 0 var(--spacing-3);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.severityItem {
+  flex: 1;
+  height: 100%;
+}
+
+.severityLabels {
+  display: flex;
+  justify-content: space-between;
+  width: 200px;
+  font-size: 0.75rem;
+  color: var(--color-gray-600);
+}
+
+.noDataContainer {
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: var(--spacing-5);
+  margin-bottom: var(--spacing-6);
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.noDataMessage {
+  text-align: center;
+  color: var(--color-gray-500);
+}
+
+.noDataMessage p {
+  margin: var(--spacing-2) 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chartContainer {
+    height: 250px;
+  }
+  
+  .yAxisLabels {
+    width: 50px;
+    font-size: 0.7rem;
+  }
+  
+  .timeRangeSelector {
+    justify-content: center;
+  }
+  
+  .legendContainer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .legendTitle {
+    margin-bottom: var(--spacing-2);
+  }
+  
+  .severityLegend {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .severityScale, .severityLabels {
+    margin: var(--spacing-2) 0;
+    width: 100%;
+  }
+}

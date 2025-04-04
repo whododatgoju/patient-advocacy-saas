@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import Button from '../components/common/Button';
 import styles from './JournalPage.module.css';
+import SymptomTracker, { Symptom } from '../components/journal/SymptomTracker';
+import BodyMap, { BodyRegion } from '../components/journal/BodyMap';
+import SymptomPatternVisualizer from '../components/journal/SymptomPatternVisualizer';
 
 // Mock data for journal entries
 const MOCK_ENTRIES: JournalEntry[] = [
@@ -52,6 +55,8 @@ interface JournalEntry {
   mood: string;
   tags: string[];
   videoBlob: Blob | null;
+  symptoms?: Symptom[];
+  bodyRegions?: string[];
 }
 
 const JournalPage: React.FC = () => {
@@ -65,6 +70,11 @@ const JournalPage: React.FC = () => {
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [videoSupported, setVideoSupported] = useState(false);
   const [showVideoPreview, setShowVideoPreview] = useState(false);
+  const [activeTab, setActiveTab] = useState<'journal' | 'symptoms'>('journal');
+  const [entrySymptoms, setEntrySymptoms] = useState<Symptom[]>([]);
+  const [selectedBodyRegions, setSelectedBodyRegions] = useState<string[]>([]);
+  const [timeRange, setTimeRange] = useState<'week' | 'month' | '3months' | 'all'>('month');
+  const [allSymptoms, setAllSymptoms] = useState<Symptom[]>([]);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -78,7 +88,9 @@ const JournalPage: React.FC = () => {
     content: '',
     mood: '',
     tags: [],
-    videoBlob: null as Blob | null
+    videoBlob: null as Blob | null,
+    symptoms: [],
+    bodyRegions: []
   });
 
   // Check if speech recognition is supported
@@ -234,6 +246,38 @@ const JournalPage: React.FC = () => {
     setNewEntry(prev => ({ ...prev, videoBlob: null }));
   };
 
+  // Handle adding a symptom to the current entry
+  const handleAddSymptom = (symptom: Symptom) => {
+    setEntrySymptoms([...entrySymptoms, symptom]);
+    setNewEntry(prev => ({
+      ...prev,
+      symptoms: [...(prev.symptoms || []), symptom]
+    }));
+  };
+
+  // Handle selecting a body region
+  const handleSelectBodyRegion = (region: BodyRegion) => {
+    const regionId = region.id;
+    
+    if (selectedBodyRegions.includes(regionId)) {
+      // Remove if already selected
+      const updatedRegions = selectedBodyRegions.filter(id => id !== regionId);
+      setSelectedBodyRegions(updatedRegions);
+      setNewEntry(prev => ({
+        ...prev,
+        bodyRegions: updatedRegions
+      }));
+    } else {
+      // Add if not already selected
+      const updatedRegions = [...selectedBodyRegions, regionId];
+      setSelectedBodyRegions(updatedRegions);
+      setNewEntry(prev => ({
+        ...prev,
+        bodyRegions: updatedRegions
+      }));
+    }
+  };
+
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -246,11 +290,18 @@ const JournalPage: React.FC = () => {
       content: newEntry.content,
       mood: newEntry.mood,
       tags: newEntry.tags,
-      videoBlob: newEntry.videoBlob
+      videoBlob: newEntry.videoBlob,
+      symptoms: entrySymptoms,
+      bodyRegions: selectedBodyRegions
     };
     
     // Add to entries
     setEntries([entry, ...entries]);
+    
+    // Add symptoms to all symptoms for pattern tracking
+    if (entrySymptoms.length > 0) {
+      setAllSymptoms([...allSymptoms, ...entrySymptoms]);
+    }
     
     // Reset form
     setNewEntry({
@@ -260,8 +311,12 @@ const JournalPage: React.FC = () => {
       content: '',
       mood: '',
       tags: [],
-      videoBlob: null as Blob | null
+      videoBlob: null,
+      symptoms: [],
+      bodyRegions: []
     });
+    setEntrySymptoms([]);
+    setSelectedBodyRegions([]);
     
     // Hide form
     setShowForm(false);
@@ -301,138 +356,215 @@ const JournalPage: React.FC = () => {
           )}
         </div>
 
+        {!showForm && allSymptoms.length > 0 && (
+          <div className={styles.patternSection}>
+            <h2 className={styles.sectionTitle}>Symptom Patterns</h2>
+            <div className={styles.timeRangeSelector}>
+              <span className={styles.timeRangeLabel}>Time Range:</span>
+              <div className={styles.timeRangeOptions}>
+                <button 
+                  className={`${styles.timeRangeOption} ${timeRange === 'week' ? styles.selectedRange : ''}`}
+                  onClick={() => setTimeRange('week' as 'week' | 'month' | '3months' | 'all')}
+                >
+                  Week
+                </button>
+                <button 
+                  className={`${styles.timeRangeOption} ${timeRange === 'month' ? styles.selectedRange : ''}`}
+                  onClick={() => setTimeRange('month' as 'week' | 'month' | '3months' | 'all')}
+                >
+                  Month
+                </button>
+                <button 
+                  className={`${styles.timeRangeOption} ${timeRange === '3months' ? styles.selectedRange : ''}`}
+                  onClick={() => setTimeRange('3months' as 'week' | 'month' | '3months' | 'all')}
+                >
+                  3 Months
+                </button>
+                <button 
+                  className={`${styles.timeRangeOption} ${timeRange === 'all' ? styles.selectedRange : ''}`}
+                  onClick={() => setTimeRange('all' as 'week' | 'month' | '3months' | 'all')}
+                >
+                  All Time
+                </button>
+              </div>
+            </div>
+            <SymptomPatternVisualizer 
+              symptoms={allSymptoms}
+              timeRange={timeRange}
+              className={styles.patternVisualizer}
+            />
+          </div>
+        )}
+
         {showForm && (
           <div className={styles.newEntryForm}>
             <h2 className={styles.formTitle}>New Journal Entry</h2>
+            
+            <div className={styles.formTabs}>
+              <button
+                className={`${styles.formTab} ${activeTab === 'journal' ? styles.activeTab : ''}`}
+                onClick={() => setActiveTab('journal')}
+              >
+                Journal Entry
+              </button>
+              <button
+                className={`${styles.formTab} ${activeTab === 'symptoms' ? styles.activeTab : ''}`}
+                onClick={() => setActiveTab('symptoms')}
+              >
+                Track Symptoms
+              </button>
+            </div>
+            
             <form onSubmit={handleSubmit}>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel} htmlFor="title">Title</label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    className={styles.formInput}
-                    value={newEntry.title}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>How are you feeling today?</label>
-                <div className={styles.moodSelector}>
-                  {MOOD_OPTIONS.map(mood => (
-                    <div 
-                      key={mood.value}
-                      className={styles.moodOption}
-                      onClick={() => setNewEntry({...newEntry, mood: mood.value})}
-                    >
-                      <div 
-                        className={`${styles.moodIcon} ${newEntry.mood === mood.value ? styles.moodIconSelected : ''}`}
-                      >
-                        <span style={{fontSize: '24px'}}>{mood.emoji}</span>
-                      </div>
-                      <span>{mood.label}</span>
+              {activeTab === 'journal' ? (
+                <>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel} htmlFor="title">Title</label>
+                      <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        className={styles.formInput}
+                        value={newEntry.title}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="content">Journal Entry</label>
-                <div className={styles.textareaContainer}>
-                  <textarea
-                    id="content"
-                    name="content"
-                    className={styles.formTextarea}
-                    value={newEntry.content}
-                    onChange={handleInputChange}
-                    required
-                  />
-                  <div className={styles.mediaButtons}>
-                    {speechSupported && (
-                      <button 
-                        type="button"
-                        className={`${styles.speechButton} ${isListening ? styles.listening : ''}`}
-                        onClick={toggleSpeechRecognition}
-                        title={isListening ? "Stop dictation" : "Start dictation"}
-                      >
-                        <span role="img" aria-label="microphone">
-                          {isListening ? '🔴' : '🎤'}
-                        </span>
-                      </button>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>How are you feeling today?</label>
+                    <div className={styles.moodSelector}>
+                      {MOOD_OPTIONS.map(mood => (
+                        <div 
+                          key={mood.value}
+                          className={styles.moodOption}
+                          onClick={() => setNewEntry({...newEntry, mood: mood.value})}
+                        >
+                          <div 
+                            className={`${styles.moodIcon} ${newEntry.mood === mood.value ? styles.moodIconSelected : ''}`}
+                          >
+                            <span style={{fontSize: '24px'}}>{mood.emoji}</span>
+                          </div>
+                          <span>{mood.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel} htmlFor="content">Journal Entry</label>
+                    <div className={styles.textareaContainer}>
+                      <textarea
+                        id="content"
+                        name="content"
+                        className={styles.formTextarea}
+                        value={newEntry.content}
+                        onChange={handleInputChange}
+                        required
+                      />
+                      <div className={styles.mediaButtons}>
+                        {speechSupported && (
+                          <button 
+                            type="button"
+                            className={`${styles.speechButton} ${isListening ? styles.listening : ''}`}
+                            onClick={toggleSpeechRecognition}
+                            title={isListening ? "Stop dictation" : "Start dictation"}
+                          >
+                            <span role="img" aria-label="microphone">
+                              {isListening ? '🔴' : '🎤'}
+                            </span>
+                          </button>
+                        )}
+                        
+                        {videoSupported && (
+                          <button 
+                            type="button"
+                            className={`${styles.videoButton} ${isRecordingVideo ? styles.recording : ''}`}
+                            onClick={toggleVideoRecording}
+                            title={isRecordingVideo ? "Stop recording" : "Record video"}
+                          >
+                            <span role="img" aria-label="video camera">
+                              {isRecordingVideo ? '🔴' : '📹'}
+                            </span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    {isListening && (
+                      <div className={styles.listeningIndicator}>
+                        Listening... Speak clearly into your microphone
+                      </div>
+                    )}
+                    {isRecordingVideo && (
+                      <div className={styles.recordingIndicator}>
+                        Recording video... Speak clearly and keep face in frame
+                      </div>
                     )}
                     
-                    {videoSupported && (
-                      <button 
-                        type="button"
-                        className={`${styles.videoButton} ${isRecordingVideo ? styles.recording : ''}`}
-                        onClick={toggleVideoRecording}
-                        title={isRecordingVideo ? "Stop recording" : "Record video"}
-                      >
-                        <span role="img" aria-label="video camera">
-                          {isRecordingVideo ? '🔴' : '📹'}
-                        </span>
-                      </button>
+                    {/* Video preview area */}
+                    {showVideoPreview && videoURL && (
+                      <div className={styles.videoPreviewContainer}>
+                        <h4 className={styles.videoPreviewTitle}>Video Preview</h4>
+                        <video 
+                          className={styles.videoPreview} 
+                          src={videoURL} 
+                          controls
+                        />
+                        <button 
+                          type="button" 
+                          className={styles.removeVideoButton}
+                          onClick={removeVideo}
+                        >
+                          Remove Video
+                        </button>
+                      </div>
+                    )}
+                    
+                    {/* Video recording preview */}
+                    {isRecordingVideo && (
+                      <div className={styles.liveVideoContainer}>
+                        <video 
+                          ref={videoRef}
+                          className={styles.liveVideo} 
+                          muted
+                        />
+                      </div>
                     )}
                   </div>
-                </div>
-                {isListening && (
-                  <div className={styles.listeningIndicator}>
-                    Listening... Speak clearly into your microphone
-                  </div>
-                )}
-                {isRecordingVideo && (
-                  <div className={styles.recordingIndicator}>
-                    Recording video... Speak clearly and keep face in frame
-                  </div>
-                )}
-                
-                {/* Video preview area */}
-                {showVideoPreview && videoURL && (
-                  <div className={styles.videoPreviewContainer}>
-                    <h4 className={styles.videoPreviewTitle}>Video Preview</h4>
-                    <video 
-                      className={styles.videoPreview} 
-                      src={videoURL} 
-                      controls
-                    />
-                    <button 
-                      type="button" 
-                      className={styles.removeVideoButton}
-                      onClick={removeVideo}
-                    >
-                      Remove Video
-                    </button>
-                  </div>
-                )}
-                
-                {/* Video recording preview */}
-                {isRecordingVideo && (
-                  <div className={styles.liveVideoContainer}>
-                    <video 
-                      ref={videoRef}
-                      className={styles.liveVideo} 
-                      muted
-                    />
-                  </div>
-                )}
-              </div>
 
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="tags">Tags (comma separated)</label>
-                <input
-                  type="text"
-                  id="tags"
-                  name="tags"
-                  className={styles.formInput}
-                  value={newEntry.tags.join(', ')}
-                  onChange={handleInputChange}
-                  placeholder="e.g., headache, medication, exercise"
-                />
-              </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel} htmlFor="tags">Tags (comma separated)</label>
+                    <input
+                      type="text"
+                      id="tags"
+                      name="tags"
+                      className={styles.formInput}
+                      value={newEntry.tags.join(', ')}
+                      onChange={handleInputChange}
+                      placeholder="e.g., headache, medication, exercise"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.symptomTrackingContainer}>
+                    <SymptomTracker 
+                      onAddSymptom={handleAddSymptom}
+                      existingSymptoms={entrySymptoms}
+                    />
+                    
+                    <div className={styles.bodyMapSection}>
+                      <h3 className={styles.sectionTitle}>Mark Affected Body Areas</h3>
+                      <BodyMap 
+                        onSelectRegion={handleSelectBodyRegion}
+                        selectedRegions={selectedBodyRegions}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className={styles.formActions}>
                 <Button variant="secondary" type="button" onClick={() => setShowForm(false)}>
@@ -485,6 +617,46 @@ const JournalPage: React.FC = () => {
                 </div>
                 <h3 className={styles.entryTitle}>{entry.title}</h3>
                 <p className={styles.entryContent}>{entry.content}</p>
+                
+                {/* Display symptoms */}
+                {entry.symptoms && entry.symptoms.length > 0 && (
+                  <div className={styles.entrySymptoms}>
+                    <h4 className={styles.entrySubtitle}>Symptoms Tracked</h4>
+                    <div className={styles.symptomCards}>
+                      {entry.symptoms.map(symptom => (
+                        <div key={symptom.id} className={styles.symptomCard}>
+                          <div className={styles.symptomHeader}>
+                            <span className={styles.symptomName}>{symptom.name}</span>
+                            <span className={styles.symptomSeverity}>
+                              Severity: {symptom.severity}/10
+                            </span>
+                          </div>
+                          {(symptom.location && symptom.location.length > 0) && (
+                            <div className={styles.symptomDetail}>
+                              <span className={styles.detailLabel}>Location:</span>
+                              <span>{symptom.location.join(', ')}</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Display body regions */}
+                {entry.bodyRegions && entry.bodyRegions.length > 0 && (
+                  <div className={styles.entryBodyRegions}>
+                    <div className={styles.bodyRegionLabel}>Affected areas:</div>
+                    <div className={styles.bodyRegionTags}>
+                      {entry.bodyRegions.map((regionId, index) => (
+                        <span key={index} className={styles.bodyRegionTag}>
+                          {regionId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 {entry.tags.length > 0 && (
                   <div className={styles.entryTags}>
                     {entry.tags.map((tag, index) => (

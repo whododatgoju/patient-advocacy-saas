@@ -4,6 +4,8 @@ import Button from '../components/common/Button';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './DashboardPage.module.css';
 import VideoCallList from '../components/video/VideoCallList';
+import HealthJourneyTimeline from '../components/timeline/HealthJourneyTimeline';
+import mockTimelineEvents from '../data/mockTimelineEvents';
 
 const DashboardPage: React.FC = () => {
   const location = useLocation();
@@ -91,6 +93,16 @@ const DashboardPage: React.FC = () => {
                   Read messages →
                 </Link>
               </div>
+            </div>
+            
+            {/* Healthcare Journey Timeline */}
+            <div className={styles.sectionCard}>
+              <HealthJourneyTimeline 
+                events={mockTimelineEvents} 
+                onAddEvent={() => alert('Add event functionality to be implemented')}
+                onEditEvent={(id) => alert(`Edit event ${id} functionality to be implemented`)}
+                onDeleteEvent={(id) => alert(`Delete event ${id} functionality to be implemented`)}
+              />
             </div>
             
             {/* Video Calls Section */}

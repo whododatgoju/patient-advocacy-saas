@@ -1,0 +1,147 @@
+.bodyMapContainer {
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: var(--spacing-5);
+  margin-bottom: var(--spacing-6);
+}
+
+.viewToggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-4);
+  gap: var(--spacing-3);
+}
+
+.viewButton {
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--color-gray-100);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  color: var(--color-gray-700);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewButton:hover {
+  background-color: var(--color-gray-200);
+}
+
+.activeView {
+  background-color: var(--color-primary-lightest);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.bodyMapWrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.bodySvg {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+}
+
+.bodyRegion {
+  fill: var(--color-gray-100);
+  stroke: var(--color-gray-300);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bodyRegion:hover {
+  fill: var(--color-gray-200);
+  stroke: var(--color-gray-500);
+}
+
+.hoveredRegion {
+  fill: var(--color-primary-lightest);
+  stroke: var(--color-primary);
+}
+
+.selectedRegion {
+  fill: var(--color-primary-light);
+  stroke: var(--color-primary);
+  stroke-width: 2;
+}
+
+.regionTooltip {
+  position: absolute;
+  top: 10px;
+  right: 0;
+  background-color: var(--color-gray-900);
+  color: white;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.selectedRegionsContainer {
+  margin-top: var(--spacing-5);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.selectedTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  margin: 0 0 var(--spacing-3) 0;
+}
+
+.selectedRegionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--spacing-3);
+}
+
+.selectedRegionItem {
+  padding: var(--spacing-2);
+  background-color: var(--color-primary-lightest);
+  border: 1px solid var(--color-primary-light);
+  border-radius: var(--radius-md);
+}
+
+.selectedRegionName {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--color-primary-dark);
+}
+
+.relatedAreas {
+  margin-top: var(--spacing-1);
+  font-size: 0.75rem;
+  color: var(--color-gray-600);
+}
+
+.noSelectionsMessage {
+  text-align: center;
+  padding: var(--spacing-4);
+  color: var(--color-gray-500);
+  font-style: italic;
+  font-size: 0.875rem;
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-gray-300);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bodyMapWrapper {
+    max-width: 250px;
+  }
+  
+  .selectedRegionsGrid {
+    grid-template-columns: 1fr;
+  }
+}

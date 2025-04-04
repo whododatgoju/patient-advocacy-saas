@@ -363,6 +363,217 @@
   border-color: var(--color-primary);
 }
 
+/* Form tabs */
+.formTabs {
+  display: flex;
+  margin-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.formTab {
+  padding: var(--spacing-3) var(--spacing-5);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.formTab:hover {
+  color: var(--color-primary);
+}
+
+.activeTab {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* Symptom tracking styles */
+.symptomTrackingContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.bodyMapSection {
+  margin-top: var(--spacing-4);
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  margin-bottom: var(--spacing-4);
+}
+
+/* Pattern visualization section */
+.patternSection {
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-4);
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.patternVisualizer {
+  margin-top: var(--spacing-4);
+}
+
+/* Time range selector */
+.timeRangeSelector {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.timeRangeLabel {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+  margin-right: var(--spacing-3);
+}
+
+.timeRangeOptions {
+  display: flex;
+  gap: var(--spacing-1);
+}
+
+.timeRangeOption {
+  padding: var(--spacing-1) var(--spacing-3);
+  background: none;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  color: var(--color-gray-700);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timeRangeOption:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.selectedRange {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.selectedRange:hover {
+  color: white;
+}
+
+/* Journal entry symptom display */
+.entrySymptoms {
+  margin-top: var(--spacing-3);
+  padding-top: var(--spacing-3);
+  border-top: 1px dashed var(--color-gray-200);
+}
+
+.entrySubtitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  margin-bottom: var(--spacing-2);
+}
+
+.symptomCards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
+}
+
+.symptomCard {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+  padding: var(--spacing-2);
+  background-color: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+}
+
+.symptomHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-1);
+}
+
+.symptomName {
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.symptomSeverity {
+  font-size: 0.8rem;
+  padding: var(--spacing-1) var(--spacing-2);
+  background-color: var(--color-primary-lightest);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+.symptomDetail {
+  margin-top: var(--spacing-1);
+  display: flex;
+  gap: var(--spacing-2);
+  font-size: 0.85rem;
+  color: var(--color-gray-700);
+}
+
+.detailLabel {
+  font-weight: 500;
+}
+
+/* Body regions display */
+.entryBodyRegions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin: var(--spacing-3) 0;
+}
+
+.bodyRegionLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.bodyRegionTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.bodyRegionTag {
+  font-size: 0.8rem;
+  padding: var(--spacing-1) var(--spacing-2);
+  background-color: var(--color-primary-lightest);
+  color: var(--color-primary-dark);
+  border-radius: var(--radius-sm);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .symptomTrackingContainer {
+    flex-direction: column;
+  }
+  
+  .symptomCards {
+    flex-direction: column;
+  }
+  
+  .symptomCard {
+    max-width: none;
+  }
+}
+
 @keyframes pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);

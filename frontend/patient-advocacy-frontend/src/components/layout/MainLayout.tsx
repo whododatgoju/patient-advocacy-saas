@@ -39,6 +39,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
               <Link to="/" className={styles.navLink}>Home</Link>
               <Link to="/dashboard" className={styles.navLink}>Dashboard</Link>
               <Link to="/journal" className={styles.navLink}>Health Journal</Link>
+              <Link to="/schedule-call" className={styles.navLink}>Video Calls</Link>
               <Link to="/resources" className={styles.navLink}>Resources</Link>
               <Link to="/advocate-match" className={styles.navLink}>Find Advocate</Link>
             </nav>
@@ -90,6 +91,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                   <li><Link to="/" className={styles.footerLink}>Home</Link></li>
                   <li><Link to="/dashboard" className={styles.footerLink}>Dashboard</Link></li>
                   <li><Link to="/journal" className={styles.footerLink}>Health Journal</Link></li>
+                  <li><Link to="/schedule-call" className={styles.footerLink}>Video Calls</Link></li>
                   <li><Link to="/resources" className={styles.footerLink}>Resources</Link></li>
                   <li><Link to="/advocate-match" className={styles.footerLink}>Find an Advocate</Link></li>
                   <li><Link to="/about" className={styles.footerLink}>About Us</Link></li>

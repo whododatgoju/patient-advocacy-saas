@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import Button from '../components/common/Button';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './DashboardPage.module.css';
+import VideoCallList from '../components/video/VideoCallList';
 
 const DashboardPage: React.FC = () => {
+  const location = useLocation();
   // This would come from the Redux store in a real application
   const [userRole, setUserRole] = useState<'patient' | 'advocate' | 'provider'>('patient');
+  const [showCallNotification, setShowCallNotification] = useState(false);
   
   // For demonstration, allow toggling between roles
   const toggleRole = () => {
@@ -15,9 +18,39 @@ const DashboardPage: React.FC = () => {
     else setUserRole('patient');
   };
 
+  // Check if we have a newly scheduled call notification from the state
+  useEffect(() => {
+    if (location.state?.scheduledCall) {
+      setShowCallNotification(true);
+      
+      // Auto-hide notification after 5 seconds
+      const timer = setTimeout(() => {
+        setShowCallNotification(false);
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
+
   return (
     <MainLayout role={userRole}>
       <div className={styles.dashboardContainer}>
+        {showCallNotification && (
+          <div className={styles.callNotification}>
+            <div className={styles.callNotificationContent}>
+              <span className={styles.notificationIcon}>✓</span>
+              <p>Video call successfully scheduled with {location.state?.scheduledCall?.participant} on {location.state?.scheduledCall?.date} at {location.state?.scheduledCall?.time}</p>
+            </div>
+            <button 
+              className={styles.dismissButton} 
+              onClick={() => setShowCallNotification(false)}
+              aria-label="Dismiss notification"
+            >
+              ×
+            </button>
+          </div>
+        )}
+      
         <div className={styles.dashboardHeader}>
           <div>
             <h1 className={styles.headerTitle}>Dashboard</h1>
@@ -58,6 +91,11 @@ const DashboardPage: React.FC = () => {
                   Read messages →
                 </Link>
               </div>
+            </div>
+            
+            {/* Video Calls Section */}
+            <div className={styles.sectionCard}>
+              <VideoCallList />
             </div>
             
             {/* Recent Activity */}

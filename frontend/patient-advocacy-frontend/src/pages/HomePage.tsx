@@ -18,8 +18,12 @@ const HomePage: React.FC = () => {
               Connect with dedicated advocates, manage your healthcare, and access personalized resources all in one place.
             </p>
             <div className={styles.heroButtons}>
-              <Button variant="primary" size="lg">Get Started</Button>
-              <Button variant="secondary" size="lg">Learn More</Button>
+              <Link to="/signup">
+                <Button variant="primary" size="lg">Sign Up</Button>
+              </Link>
+              <Link to="/login">
+                <Button variant="secondary" size="lg">Login</Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -122,7 +126,14 @@ const HomePage: React.FC = () => {
         <div className="container">
           <h2 className={styles.ctaTitle}>Ready to Take Control of Your Healthcare Journey?</h2>
           <p className={styles.ctaDescription}>Join thousands of patients who have transformed their healthcare experience with our advocacy platform.</p>
-          <Button variant="secondary" size="lg">Create Your Free Account</Button>
+          <div className={styles.ctaButtons}>
+            <Link to="/signup">
+              <Button variant="primary" size="lg">Create Your Free Account</Button>
+            </Link>
+            <p className={styles.loginLink}>
+              Already have an account? <Link to="/login" className={styles.linkTextCta}>Sign in</Link>
+            </p>
+          </div>
         </div>
       </section>
     </MainLayout>

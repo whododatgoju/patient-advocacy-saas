@@ -369,3 +369,64 @@
   font-size: 0.75rem;
   color: var(--color-gray-500);
 }
+
+/* Call Notification */
+.callNotification {
+  background-color: var(--color-success-light, #e6f7ea);
+  border: 1px solid var(--color-success, #34c759);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.callNotificationContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notificationIcon {
+  background-color: var(--color-success, #34c759);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.dismissButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--color-gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.dismissButton:hover {
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

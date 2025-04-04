@@ -1,0 +1,474 @@
+.schedulerContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.schedulerHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.schedulerHeader h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--color-gray-900);
+}
+
+.schedulerHeader p {
+  color: var(--color-gray-600);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 0 2rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 1;
+}
+
+.stepNumber {
+  width: 32px;
+  height: 32px;
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-600);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.stepLabel {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  transition: color 0.3s ease;
+}
+
+.stepActive .stepNumber {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.stepActive .stepLabel {
+  color: var(--color-gray-900);
+  font-weight: 500;
+}
+
+.stepConnector {
+  flex: 1;
+  height: 2px;
+  background-color: var(--color-gray-200);
+  margin: 0 0.5rem;
+  position: relative;
+  top: -15px;
+}
+
+.stepContent {
+  position: relative;
+  padding-top: 1rem;
+}
+
+.stepContent h3 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.backButton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Step 1: Participant Type Selection */
+.participantTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.participantTypeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.participantTypeCard:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(59, 130, 246, 0.05);
+  transform: translateY(-2px);
+}
+
+.participantTypeIcon {
+  width: 64px;
+  height: 64px;
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.participantTypeCard h4 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-gray-900);
+}
+
+.participantTypeCard p {
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+}
+
+/* Step 2: Specific Participant Selection */
+.participantsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.participantCard {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.participantCard:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.participantUnavailable {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.participantUnavailable:hover {
+  border-color: var(--color-gray-200);
+  background-color: transparent;
+}
+
+.participantAvatar {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.participantInfo {
+  flex: 1;
+}
+
+.participantInfo h4 {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: var(--color-gray-900);
+}
+
+.participantInfo p {
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.unavailableTag {
+  display: inline-block;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-500);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-md);
+}
+
+/* Step 3: Date and Time Selection */
+.selectedParticipant {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--color-gray-600);
+}
+
+.selectedParticipant span {
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.dateTimeSelector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.dateSelector h4,
+.timeSelector h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: var(--color-gray-900);
+}
+
+.dateList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dateButton {
+  background: none;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--color-gray-900);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dateButton:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.dateButtonSelected {
+  border-color: var(--color-primary);
+  background-color: rgba(59, 130, 246, 0.1);
+  font-weight: 500;
+}
+
+.timeSlotList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.timeSlotButton {
+  background: none;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-gray-900);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.timeSlotButton:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.notesSection {
+  margin-top: 2rem;
+}
+
+.notesSection h4 {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  color: var(--color-gray-900);
+}
+
+.notesInput {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  resize: vertical;
+  min-height: 100px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.notesInput:focus {
+  border-color: var(--color-primary);
+}
+
+/* Step 4: Confirmation */
+.confirmationCard {
+  background-color: rgba(59, 130, 246, 0.05);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.confirmationIcon {
+  width: 64px;
+  height: 64px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 2rem;
+  flex-shrink: 0;
+}
+
+.confirmationDetails {
+  flex: 1;
+}
+
+.confirmationItem {
+  margin-bottom: 1rem;
+}
+
+.confirmationItem:last-child {
+  margin-bottom: 0;
+}
+
+.confirmationLabel {
+  font-weight: 600;
+  margin-right: 0.5rem;
+  color: var(--color-gray-900);
+}
+
+.confirmationValue {
+  color: var(--color-gray-700);
+}
+
+.confirmationInfo {
+  background-color: rgba(255, 221, 87, 0.1);
+  border-left: 4px solid #FFDD57;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border-radius: var(--radius-md);
+}
+
+.confirmationInfo p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-gray-700);
+  font-size: 0.875rem;
+}
+
+.scheduleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.scheduleButton:hover {
+  background-color: var(--color-primary-dark, #2563eb);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .schedulerContainer {
+    padding: 1.5rem;
+  }
+  
+  .stepIndicator {
+    padding: 0;
+  }
+  
+  .stepNumber {
+    width: 28px;
+    height: 28px;
+    font-size: 0.875rem;
+  }
+  
+  .stepLabel {
+    font-size: 0.75rem;
+    display: none;
+  }
+  
+  .participantTypeGrid,
+  .participantsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dateTimeSelector {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .timeSlotList {
+    grid-template-columns: 1fr;
+  }
+  
+  .confirmationCard {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .confirmationIcon {
+    margin-right: 0;
+    margin-bottom: 1.5rem;
+  }
+}

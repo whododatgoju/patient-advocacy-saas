@@ -4,14 +4,11 @@ import DashboardPage from './pages/DashboardPage'
 import JournalPage from './pages/JournalPage'
 import ResourcesPage from './pages/ResourcesPage'
 import AdvocateMatchPage from './pages/AdvocateMatchPage'
-
-// We'll add these pages as placeholders for now
-const ProfilePage = () => (
-  <div className="p-8">
-    <h1 className="text-3xl font-bold mb-4">Profile Page</h1>
-    <p>This page will contain user profile management with editable fields.</p>
-  </div>
-);
+import ProfilePage from './pages/ProfilePage'
+import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
+import VideoCallPage from './pages/VideoCallPage'
+import ScheduleCallPage from './pages/ScheduleCallPage'
 
 function App() {
   return (
@@ -23,6 +20,10 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/resources" element={<ResourcesPage />} />
         <Route path="/advocate-match" element={<AdvocateMatchPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/video-call/:callId" element={<VideoCallPage />} />
+        <Route path="/schedule-call" element={<ScheduleCallPage />} />
       </Routes>
     </Router>
   );

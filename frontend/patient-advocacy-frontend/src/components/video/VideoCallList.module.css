@@ -1,0 +1,310 @@
+.container {
+  width: 100%;
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.scheduleButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.scheduleButton:hover {
+  background-color: var(--color-primary-dark, #2563eb);
+}
+
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-gray-200);
+  padding-bottom: 1rem;
+}
+
+.filterButton {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all 0.2s;
+}
+
+.filterButton:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+}
+
+.filterActive {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.filterActive:hover {
+  background-color: var(--color-primary-dark, #2563eb);
+  color: white;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.emptyStateIcon {
+  color: var(--color-gray-400);
+  margin-bottom: 1rem;
+}
+
+.emptyState h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin-bottom: 0.5rem;
+}
+
+.emptyState p {
+  color: var(--color-gray-600);
+  margin-bottom: 1.5rem;
+}
+
+.emptyStateButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.emptyStateButton:hover {
+  background-color: var(--color-primary-dark, #2563eb);
+}
+
+.callList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dateGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.dateHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  margin-bottom: 0.5rem;
+}
+
+.callCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+  transition: all 0.2s;
+}
+
+.callCard:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.callInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.participantAvatar {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.callDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.participantName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin: 0 0 0.25rem 0;
+}
+
+.callType {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  margin-bottom: 0.25rem;
+}
+
+.callTime {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  margin-bottom: 0.25rem;
+}
+
+.callNotes {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+  font-style: italic;
+  margin-top: 0.25rem;
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.callActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.callStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 2rem;
+}
+
+.statusScheduled {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.statusIconScheduled {
+  color: #3b82f6;
+}
+
+.statusCompleted {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.statusIconCompleted {
+  color: #10b981;
+}
+
+.statusCanceled {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.statusIconCanceled {
+  color: #ef4444;
+}
+
+.joinButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.joinButton:hover {
+  background-color: var(--color-primary-dark, #2563eb);
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+  }
+  
+  .callCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .callActions {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-gray-200);
+  }
+}

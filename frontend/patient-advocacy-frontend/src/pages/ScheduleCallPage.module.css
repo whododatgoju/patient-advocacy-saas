@@ -1,0 +1,42 @@
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.headerSection {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.pageTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-gray-900);
+  background: linear-gradient(to right, var(--color-primary), var(--color-advocate));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pageDescription {
+  font-size: 1.125rem;
+  color: var(--color-gray-600);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .pageTitle {
+    font-size: 2rem;
+  }
+  
+  .pageDescription {
+    font-size: 1rem;
+  }
+}

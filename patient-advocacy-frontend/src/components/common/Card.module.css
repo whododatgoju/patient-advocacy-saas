@@ -1,0 +1,164 @@
+/* Card Component Styles */
+.card {
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  position: relative;
+  height: 100%;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Card with hover effect */
+.interactive {
+  cursor: pointer;
+}
+
+.interactive::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-500);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  z-index: 1;
+  border-radius: var(--radius-lg);
+}
+
+.interactive:hover::after {
+  opacity: 0.05;
+}
+
+/* Card padding variations */
+.padding-none {
+  padding: 0;
+}
+
+.padding-sm {
+  padding: var(--spacing-3);
+}
+
+.padding-md {
+  padding: var(--spacing-4);
+}
+
+.padding-lg {
+  padding: var(--spacing-6);
+}
+
+/* Card with border */
+.bordered {
+  border: 1px solid var(--neutral-200);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Card types by role */
+.patient {
+  border-top: 4px solid var(--primary-500);
+}
+
+.advocate {
+  border-top: 4px solid var(--secondary-500);
+}
+
+.provider {
+  border-top: 4px solid var(--success);
+}
+
+/* Card sections */
+.header {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--neutral-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.body {
+  padding: var(--spacing-4);
+}
+
+.footer {
+  padding: var(--spacing-4);
+  border-top: 1px solid var(--neutral-200);
+  background-color: var(--neutral-50);
+}
+
+/* Card with image */
+.withImage img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Animation variants */
+.fadeIn {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.slideUp {
+  animation: slideUp 0.5s ease-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Card grid layout */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: var(--spacing-4);
+}
+
+@media (min-width: 640px) {
+  .cardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cardGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Status indicators */
+.statusBadge {
+  position: absolute;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  z-index: 10;
+}
+
+.statusNew {
+  background-color: var(--primary-500);
+  color: white;
+}
+
+.statusPending {
+  background-color: var(--warning);
+  color: white;
+}
+
+.statusCompleted {
+  background-color: var(--success);
+  color: white;
+}
+
+.statusCancelled {
+  background-color: var(--error);
+  color: white;
+}

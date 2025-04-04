@@ -55,16 +55,17 @@ gantt
 ### Key Deliverables
 
 1. **Platform Architecture**
-   - Core technology stack implementation (React Vite, React Native)
+   - Core technology stack implementation (React Vite, TypeScript)
+   - CSS Modules for component styling (replacing Tailwind CSS)
    - Database schema and API architecture design
    - Authentication and authorization framework
-   - DevOps pipeline and deployment infrastructure
+   - DevOps pipeline and deployment infrastructure (utilizing established operations framework)
    - Testing frameworks and quality assurance processes
 
 2. **Core User Management**
    - User registration and profile management
-   - Role-based access controls
-   - Consent management framework
+   - Role-based access controls (patients, advocates, providers)
+   - Redux state management for authentication and user profiles
    - Multi-factor authentication
    - Account recovery and security protocols
 
@@ -79,7 +80,7 @@ gantt
    - Responsive design implementation
    - Screen reader compatibility
    - Keyboard navigation support
-   - Color contrast and typography standards
+   - Semantic HTML and ARIA attributes for all components
    - Progressive enhancement for varied connectivity
 
 ### Technical Specifications
@@ -99,9 +100,15 @@ flowchart TD
     J --> L[Encryption Services]
     J --> M[Audit System]
     
-    N[Accessibility] --> O[Component Library]
-    N --> P[Responsive Framework]
-    N --> Q[Offline Capabilities]
+    N[Web App Architecture] --> O[Redux State Management]
+    N --> P[CSS Modules]
+    N --> Q[Component Library]
+    N --> R[TypeScript]
+    
+    S[Operations Infrastructure] --> T[CI/CD Pipeline]
+    S --> U[Kubernetes Deployment]
+    S --> V[Monitoring & Alerting]
+    S --> W[Backup & Recovery]
 ```
 
 ### Milestones

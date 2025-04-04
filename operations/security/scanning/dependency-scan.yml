@@ -1,0 +1,127 @@
+name: Dependency Vulnerability Scan
+
+# Schedule to run weekly on Sunday at 2 AM
+schedule:
+  - cron: '0 2 * * 0'
+  
+# Run on pull requests to main branch and manually triggered workflows
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**/package.json'
+      - '**/package-lock.json'
+      - '**/requirements.txt'
+  workflow_dispatch:
+
+jobs:
+  npm-scan:
+    name: Scan NPM Dependencies
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        project: ['patient-advocacy-web', 'patient-advocacy-api']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+      - name: Install npm-audit-resolver
+        run: npm install -g npm-audit-resolver
+        
+      - name: Run vulnerability scan
+        working-directory: ${{ matrix.project }}
+        run: |
+          echo "Running vulnerability scan for ${{ matrix.project }}"
+          npm audit --json > npm-audit.json || true
+          
+      - name: Analyze scan results
+        working-directory: ${{ matrix.project }}
+        run: |
+          echo "Analyzing vulnerability scan results"
+          HIGH_VULNS=$(cat npm-audit.json | jq '.vulnerabilities | map(select(.severity=="high")) | length')
+          CRITICAL_VULNS=$(cat npm-audit.json | jq '.vulnerabilities | map(select(.severity=="critical")) | length')
+          
+          echo "Found $HIGH_VULNS high severity vulnerabilities"
+          echo "Found $CRITICAL_VULNS critical severity vulnerabilities"
+          
+          if [ "$CRITICAL_VULNS" -gt 0 ]; then
+            echo "Critical vulnerabilities found! Pipeline will fail."
+            exit 1
+          fi
+          
+          if [ "$HIGH_VULNS" -gt 5 ]; then
+            echo "Too many high severity vulnerabilities! Pipeline will fail."
+            exit 1
+          fi
+          
+      - name: Upload scan results
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.project }}-npm-audit
+          path: ${{ matrix.project }}/npm-audit.json
+          
+      - name: Generate dependency report
+        working-directory: ${{ matrix.project }}
+        run: |
+          npm ls --json > dependency-tree.json
+          
+      - name: Upload dependency tree
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.project }}-dependency-tree
+          path: ${{ matrix.project }}/dependency-tree.json
+          
+  python-scan:
+    name: Scan Python Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install safety
+        run: pip install safety
+        
+      - name: Run vulnerability scan
+        working-directory: patient-advocacy-api
+        run: |
+          echo "Running Python vulnerability scan"
+          safety check -r requirements.txt --json > python-safety-report.json || true
+          
+      - name: Analyze scan results
+        working-directory: patient-advocacy-api
+        run: |
+          echo "Analyzing Python vulnerability scan results"
+          VULN_COUNT=$(cat python-safety-report.json | jq 'length')
+          echo "Found $VULN_COUNT vulnerabilities"
+          
+          if [ "$VULN_COUNT" -gt 5 ]; then
+            echo "Too many vulnerabilities! Pipeline will fail."
+            exit 1
+          fi
+          
+      - name: Upload scan results
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-safety-report
+          path: patient-advocacy-api/python-safety-report.json

@@ -4,10 +4,14 @@
   command = "npm run build"
   functions = "netlify/functions"
 
+[build.environment]
+  NODE_VERSION = "18.17.0"
+  NPM_VERSION = "9.6.7"
+
 [dev]
   command = "npm run dev"
-  port = 5178
-  targetPort = 5178
+  port = 5173
+  targetPort = 5173
   publish = "dist"
   autoLaunch = true
   framework = "#custom"
@@ -21,8 +25,15 @@
 # Proxy API requests to serverless functions
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  to = "/.netlify/functions/api/:splat"
   status = 200
+
+# Force HTTPS
+[[redirects]]
+  from = "http://*"
+  to = "https://:splat"
+  status = 301
+  force = true
 
 # Set up headers for security
 [[headers]]

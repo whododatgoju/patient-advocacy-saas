@@ -1,0 +1,26 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="600" height="400" fill="#f8fafc" />
+  
+  <!-- Background Elements -->
+  <circle cx="100" cy="100" r="80" fill="#e0f2fe" opacity="0.6" />
+  <circle cx="500" cy="300" r="80" fill="#dbeafe" opacity="0.6" />
+  
+  <!-- Patient Figure -->
+  <circle cx="200" cy="200" r="50" fill="#1e40af" opacity="0.8" />
+  <circle cx="200" cy="140" r="30" fill="#1e40af" opacity="0.8" />
+  
+  <!-- Advocate Figure -->
+  <circle cx="400" cy="200" r="50" fill="#4f46e5" opacity="0.8" />
+  <circle cx="400" cy="140" r="30" fill="#4f46e5" opacity="0.8" />
+  
+  <!-- Connection Line -->
+  <line x1="250" y1="200" x2="350" y2="200" stroke="#059669" stroke-width="10" stroke-linecap="round" />
+  
+  <!-- Healthcare Icons -->
+  <rect x="270" y="240" width="60" height="60" rx="10" fill="#f43f5e" opacity="0.7" />
+  <text x="300" y="280" font-family="Arial" font-size="30" fill="white" text-anchor="middle">+</text>
+  
+  <!-- Text Label (Stylized) -->
+  <rect x="150" y="320" width="300" height="40" rx="20" fill="#0284c7" opacity="0.9" />
+  <text x="300" y="347" font-family="Arial" font-size="18" fill="white" text-anchor="middle">Patient Advocacy Platform</text>
+</svg>

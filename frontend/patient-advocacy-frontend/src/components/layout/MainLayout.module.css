@@ -1,0 +1,97 @@
+.layoutContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-4) 0;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.logoPatient {
+  color: var(--color-patient);
+}
+
+.logoAdvocate {
+  color: var(--color-advocate);
+}
+
+.logoProvider {
+  color: var(--color-provider);
+}
+
+.nav {
+  display: flex;
+  gap: var(--spacing-6);
+}
+
+.navLink {
+  color: var(--color-gray-700);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.navLink:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.navLinkActive {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.main {
+  flex: 1;
+  padding: var(--spacing-8) 0;
+}
+
+.footer {
+  background-color: var(--color-gray-100);
+  padding: var(--spacing-6) 0;
+  color: var(--color-gray-600);
+}
+
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footerLinks {
+  display: flex;
+  gap: var(--spacing-4);
+}
+
+.footerLink {
+  color: var(--color-gray-600);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.footerLink:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.copyright {
+  font-size: 0.875rem;
+}

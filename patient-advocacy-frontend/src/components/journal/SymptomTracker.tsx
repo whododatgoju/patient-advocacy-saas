@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './SymptomTracker.module.css';
+import { useAccessibility } from '../../contexts/AccessibilityContext';
 
 export interface Symptom {
   id: number;
@@ -86,6 +87,7 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
   existingSymptoms = [],
   className = ''
 }) => {
+  const { settings } = useAccessibility();
   const [selectedGroup, setSelectedGroup] = useState<SymptomGroup | null>(null);
   const [customSymptom, setCustomSymptom] = useState('');
   const [selectedSymptom, setSelectedSymptom] = useState('');
@@ -95,15 +97,20 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
   const [duration, setDuration] = useState('');
   const [triggers, setTriggers] = useState('');
   const [notes, setNotes] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const customSymptomInputRef = useRef<HTMLInputElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
 
   const handleSelectGroup = (group: SymptomGroup) => {
     setSelectedGroup(group);
     setSelectedSymptom('');
+    setErrorMessage('');
   };
 
   const handleSelectSymptom = (symptom: string) => {
     setSelectedSymptom(symptom);
     setCustomSymptom('');
+    setErrorMessage('');
   };
 
   const handleLocationToggle = (location: string) => {
@@ -114,11 +121,19 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
     }
   };
 
+  const handleLocationKeyPress = (e: React.KeyboardEvent, location: string) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleLocationToggle(location);
+    }
+  };
+
   const handleAddSymptom = () => {
     const symptomName = selectedSymptom || customSymptom;
     
     if (!symptomName) {
-      alert("Please select or enter a symptom");
+      setErrorMessage("Please select or enter a symptom");
+      errorRef.current?.focus();
       return;
     }
 
@@ -145,23 +160,55 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
     setDuration('');
     setTriggers('');
     setNotes('');
+    setErrorMessage('');
   };
 
+  // Announce errors to screen readers
+  useEffect(() => {
+    if (errorMessage) {
+      errorRef.current?.focus();
+    }
+  }, [errorMessage]);
+
   return (
-    <div className={`${styles.symptomTracker} ${className}`}>
-      <h3 className={styles.trackerTitle}>Track Symptoms</h3>
+    <div 
+      className={`${styles.symptomTracker} ${className} 
+        ${settings?.highContrast ? styles.highContrast : ''}
+        ${settings?.largeText ? styles.largeText : ''}
+      `}
+      role="region"
+      aria-labelledby="symptom-tracker-title"
+    >
+      <h3 id="symptom-tracker-title" className={styles.trackerTitle}>Track Symptoms</h3>
+      
+      {errorMessage && (
+        <div 
+          className={styles.errorMessage} 
+          role="alert"
+          ref={errorRef}
+          tabIndex={-1}
+        >
+          {errorMessage}
+        </div>
+      )}
       
       <div className={styles.symptomForm}>
         {/* Step 1: Select symptom group or enter custom */}
         <div className={styles.formSection}>
-          <h4 className={styles.sectionTitle}>1. Select Symptom Category</h4>
-          <div className={styles.symptomGroups}>
+          <h4 id="step1-heading" className={styles.sectionTitle}>1. Select Symptom Category</h4>
+          <div 
+            className={styles.symptomGroups}
+            role="radiogroup"
+            aria-labelledby="step1-heading"
+          >
             {SYMPTOM_GROUPS.map(group => (
               <button
                 key={group.id}
                 className={`${styles.groupButton} ${selectedGroup?.id === group.id ? styles.groupButtonActive : ''}`}
                 onClick={() => handleSelectGroup(group)}
                 type="button"
+                aria-pressed={selectedGroup?.id === group.id}
+                aria-label={`${group.name} category`}
               >
                 {group.name}
               </button>
@@ -172,21 +219,26 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
         {/* Step 2: Select specific symptom */}
         {selectedGroup && (
           <div className={styles.formSection}>
-            <h4 className={styles.sectionTitle}>2. Select Specific Symptom</h4>
-            <div className={styles.symptomList}>
+            <h4 id="step2-heading" className={styles.sectionTitle}>2. Select Specific Symptom</h4>
+            <div 
+              className={styles.symptomList}
+              role="radiogroup"
+              aria-labelledby="step2-heading"
+            >
               {selectedGroup.symptoms.map((symptom, index) => (
                 <button
                   key={index}
                   className={`${styles.symptomButton} ${selectedSymptom === symptom ? styles.symptomButtonActive : ''}`}
                   onClick={() => handleSelectSymptom(symptom)}
                   type="button"
+                  aria-pressed={selectedSymptom === symptom}
                 >
                   {symptom}
                 </button>
               ))}
             </div>
             <div className={styles.customSymptomContainer}>
-              <span className={styles.orDivider}>OR</span>
+              <span className={styles.orDivider} id="or-divider">OR</span>
               <input 
                 type="text" 
                 className={styles.customSymptomInput}
@@ -196,6 +248,9 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
                   setCustomSymptom(e.target.value);
                   setSelectedSymptom('');
                 }}
+                aria-labelledby="step2-heading or-divider"
+                ref={customSymptomInputRef}
+                id="custom-symptom"
               />
             </div>
           </div>
@@ -204,7 +259,7 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
         {/* Step 3: Symptom details */}
         {(selectedSymptom || customSymptom) && (
           <div className={styles.formSection}>
-            <h4 className={styles.sectionTitle}>3. Symptom Details</h4>
+            <h4 id="step3-heading" className={styles.sectionTitle}>3. Symptom Details</h4>
             
             {/* Severity slider */}
             <div className={styles.formGroup}>
@@ -219,11 +274,19 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
                   step="1"
                   value={severity}
                   onChange={(e) => setSeverity(parseInt(e.target.value))} 
+                  aria-valuemin={0}
+                  aria-valuemax={10}
+                  aria-valuenow={severity}
+                  aria-valuetext={`Severity level ${severity} out of 10`}
                 />
-                <div className={styles.sliderValue} style={{ left: `calc(${severity * 10}% - 12px)` }}>
+                <div 
+                  className={styles.sliderValue} 
+                  style={{ left: `calc(${severity * 10}% - 12px)` }}
+                  aria-hidden="true"
+                >
                   {severity}
                 </div>
-                <div className={styles.sliderLabels}>
+                <div className={styles.sliderLabels} aria-hidden="true">
                   <span>None</span>
                   <span>Mild</span>
                   <span>Moderate</span>
@@ -235,18 +298,25 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
             
             {/* Location(s) */}
             <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Location(s)</label>
-              <div className={styles.locationSelector}>
-                {BODY_LOCATIONS.map((location, index) => (
-                  <div 
-                    key={index} 
-                    className={`${styles.locationTag} ${locations.includes(location) ? styles.locationTagSelected : ''}`}
-                    onClick={() => handleLocationToggle(location)}
-                  >
-                    {location}
-                  </div>
-                ))}
-              </div>
+              <fieldset className={styles.fieldset}>
+                <legend className={styles.formLabel}>Location(s)</legend>
+                <div className={styles.locationSelector} role="group">
+                  {BODY_LOCATIONS.map((location, index) => (
+                    <div 
+                      key={index} 
+                      className={`${styles.locationTag} ${locations.includes(location) ? styles.locationTagSelected : ''}`}
+                      onClick={() => handleLocationToggle(location)}
+                      onKeyPress={(e) => handleLocationKeyPress(e, location)}
+                      role="checkbox"
+                      aria-checked={locations.includes(location)}
+                      tabIndex={0}
+                      aria-label={`Location: ${location}`}
+                    >
+                      {location}
+                    </div>
+                  ))}
+                </div>
+              </fieldset>
             </div>
 
             {/* Time of day */}
@@ -257,12 +327,14 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
                 className={styles.formSelect}
                 value={timeOfDay}
                 onChange={(e) => setTimeOfDay(e.target.value)}
+                aria-describedby="timeOfDay-description"
               >
                 <option value="">Select when it occurs</option>
                 {TIME_OF_DAY.map((time, index) => (
                   <option key={index} value={time}>{time}</option>
                 ))}
               </select>
+              <span id="timeOfDay-description" className="sr-only">When the symptom typically occurs or follows a pattern</span>
             </div>
 
             {/* Duration */}
@@ -275,7 +347,9 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
                 placeholder="e.g., 2 hours, all day, comes and goes"
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
+                aria-describedby="duration-description"
               />
+              <span id="duration-description" className="sr-only">How long the symptom typically lasts</span>
             </div>
 
             {/* Triggers */}
@@ -288,7 +362,9 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
                 placeholder="e.g., after meals, stress, medication"
                 value={triggers}
                 onChange={(e) => setTriggers(e.target.value)}
+                aria-describedby="triggers-description"
               />
+              <span id="triggers-description" className="sr-only">Factors that might cause or worsen the symptom</span>
             </div>
 
             {/* Additional notes */}
@@ -301,30 +377,47 @@ const SymptomTracker: React.FC<SymptomTrackerProps> = ({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
+                aria-describedby="notes-description"
               />
+              <span id="notes-description" className="sr-only">Any additional information about the symptom</span>
             </div>
 
             <button 
               type="button" 
               className={styles.addSymptomButton}
               onClick={handleAddSymptom}
+              aria-describedby="add-symptom-description"
             >
               Add Symptom to Journal
             </button>
+            <span id="add-symptom-description" className="sr-only">
+              Save this symptom information to your health journal
+            </span>
           </div>
         )}
       </div>
 
       {/* Display existing symptoms */}
       {existingSymptoms.length > 0 && (
-        <div className={styles.recordedSymptoms}>
-          <h4 className={styles.sectionTitle}>Recorded Symptoms</h4>
+        <div 
+          className={styles.recordedSymptoms}
+          aria-labelledby="recorded-symptoms-title"
+        >
+          <h4 id="recorded-symptoms-title" className={styles.sectionTitle}>Recorded Symptoms</h4>
           <div className={styles.symptomCards}>
             {existingSymptoms.map(symptom => (
-              <div key={symptom.id} className={styles.symptomCard}>
+              <div 
+                key={symptom.id} 
+                className={styles.symptomCard}
+                role="region"
+                aria-label={`${symptom.name} symptom details`}
+              >
                 <div className={styles.symptomCardHeader}>
                   <h5 className={styles.symptomName}>{symptom.name}</h5>
-                  <span className={`${styles.severityBadge} ${styles[`severity${Math.ceil(symptom.severity / 2)}`]}`}>
+                  <span 
+                    className={`${styles.severityBadge} ${styles[`severity${Math.ceil(symptom.severity / 2)}`]}`}
+                    aria-label={`Severity: ${symptom.severity} out of 10`}
+                  >
                     {symptom.severity}/10
                   </span>
                 </div>

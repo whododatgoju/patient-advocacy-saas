@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, memo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './HealthJourneyTimeline.module.css';
 
@@ -36,6 +36,193 @@ interface HealthJourneyTimelineProps {
   onDeleteEvent?: (eventId: number) => void;
 }
 
+// Memoized filter and type select components
+const TimelineFilter = memo(({ 
+  filterType, 
+  setFilterType, 
+  showImportantOnly, 
+  setShowImportantOnly 
+}: { 
+  filterType: TimelineEventType | 'all';
+  setFilterType: (type: TimelineEventType | 'all') => void;
+  showImportantOnly: boolean;
+  setShowImportantOnly: (show: boolean) => void;
+}) => {
+  return (
+    <div className={styles.timelineFilters}>
+      <div className={styles.typeFilter}>
+        <label htmlFor="typeFilter">Filter by type:</label>
+        <select 
+          id="typeFilter" 
+          value={filterType} 
+          onChange={(e) => setFilterType(e.target.value as TimelineEventType | 'all')}
+        >
+          <option value="all">All Events</option>
+          <option value="appointment">Appointments</option>
+          <option value="diagnosis">Diagnoses</option>
+          <option value="medication">Medications</option>
+          <option value="procedure">Procedures</option>
+          <option value="test">Tests</option>
+          <option value="journal">Journal Entries</option>
+          <option value="rights-issue">Patient Rights Issues</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      
+      <div className={styles.importantFilter}>
+        <label>
+          <input 
+            type="checkbox" 
+            checked={showImportantOnly} 
+            onChange={(e) => setShowImportantOnly(e.target.checked)} 
+          />
+          Show important events only
+        </label>
+      </div>
+    </div>
+  );
+});
+
+TimelineFilter.displayName = 'TimelineFilter';
+
+// Memoized timeline event component
+const TimelineEventItem = memo(({ 
+  event, 
+  isExpanded, 
+  toggleExpand, 
+  onEdit, 
+  onDelete 
+}: { 
+  event: TimelineEvent;
+  isExpanded: boolean;
+  toggleExpand: () => void;
+  onEdit?: (id: number) => void;
+  onDelete?: (id: number) => void;
+}) => {
+  // Format date more efficiently
+  const formattedDate = useMemo(() => {
+    const date = new Date(event.date);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }, [event.date]);
+
+  // Handle edit button click
+  const handleEdit = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEdit) onEdit(event.id);
+  }, [event.id, onEdit]);
+
+  // Handle delete button click
+  const handleDelete = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete && window.confirm('Are you sure you want to delete this event?')) {
+      onDelete(event.id);
+    }
+  }, [event.id, onDelete]);
+
+  return (
+    <div 
+      className={`${styles.timelineEvent} ${styles[`event-${event.type}`]} ${event.important ? styles.importantEvent : ''}`}
+      onClick={toggleExpand}
+    >
+      <div className={styles.eventHeader}>
+        <div className={styles.eventDate}>{formattedDate}</div>
+        <div className={styles.eventType}>{event.type.charAt(0).toUpperCase() + event.type.slice(1)}</div>
+        <div className={styles.eventTitle}>{event.title}</div>
+        <div className={styles.expandIcon}>{isExpanded ? '▼' : '►'}</div>
+      </div>
+      
+      {isExpanded && (
+        <div className={styles.eventDetails}>
+          {event.description && (
+            <div className={styles.eventDescription}>
+              <h4>Description</h4>
+              <p>{event.description}</p>
+            </div>
+          )}
+          
+          {event.provider && (
+            <div className={styles.eventProvider}>
+              <h4>Provider</h4>
+              <p>{event.provider}</p>
+            </div>
+          )}
+          
+          {event.location && (
+            <div className={styles.eventLocation}>
+              <h4>Location</h4>
+              <p>{event.location}</p>
+            </div>
+          )}
+          
+          {event.relatedDocuments && event.relatedDocuments.length > 0 && (
+            <div className={styles.relatedDocuments}>
+              <h4>Related Documents</h4>
+              <ul>
+                {event.relatedDocuments.map(doc => (
+                  <li key={doc.id}>
+                    <Link to={`/documents/${doc.id}`}>{doc.name}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {event.relatedJournalEntries && event.relatedJournalEntries.length > 0 && (
+            <div className={styles.relatedJournals}>
+              <h4>Related Journal Entries</h4>
+              <ul>
+                {event.relatedJournalEntries.map(entry => (
+                  <li key={entry.id}>
+                    <Link to={`/journal/${entry.id}`}>{entry.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {event.patientRightsRelevance && event.patientRightsRelevance.length > 0 && (
+            <div className={styles.patientRights}>
+              <h4>Patient Rights Relevance</h4>
+              <ul>
+                {event.patientRightsRelevance.map((right, index) => (
+                  <li key={index}>
+                    <Link to="/resources/patient-rights">{right}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {event.followUpNeeded && (
+            <div className={`${styles.followUp} ${event.followUpDate && new Date(event.followUpDate) < new Date() ? styles.overdue : ''}`}>
+              <h4>Follow-up</h4>
+              <p>
+                {event.followUpDate ? (
+                  <>Required by {new Date(event.followUpDate).toLocaleDateString()}</>
+                ) : (
+                  <>Follow-up needed</>
+                )}
+              </p>
+            </div>
+          )}
+          
+          <div className={styles.eventActions}>
+            {onEdit && <button onClick={handleEdit} className={styles.editButton}>Edit</button>}
+            {onDelete && <button onClick={handleDelete} className={styles.deleteButton}>Delete</button>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+
+TimelineEventItem.displayName = 'TimelineEventItem';
+
+// Main timeline component
 const HealthJourneyTimeline: React.FC<HealthJourneyTimelineProps> = ({ 
   events, 
   onAddEvent, 
@@ -46,15 +233,24 @@ const HealthJourneyTimeline: React.FC<HealthJourneyTimelineProps> = ({
   const [filterType, setFilterType] = useState<TimelineEventType | 'all'>('all');
   const [showImportantOnly, setShowImportantOnly] = useState(false);
 
-  // Group events by month for easier visualization
-  const groupEventsByMonth = (events: TimelineEvent[]) => {
+  // Group events by month - memoized for performance
+  const groupedEvents = useMemo(() => {
+    // Filter events based on current filter settings
     const filteredEvents = events.filter(event => {
-      if (filterType !== 'all' && event.type !== filterType) return false;
       if (showImportantOnly && !event.important) return false;
+      if (filterType !== 'all' && event.type !== filterType) return false;
       return true;
     });
-
-    return filteredEvents.reduce((groups, event) => {
+    
+    // Sort events by date (newest first)
+    const sortedEvents = [...filteredEvents].sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    
+    // Group events by month and year
+    const groups: Record<string, TimelineEvent[]> = {};
+    
+    sortedEvents.forEach(event => {
       const date = new Date(event.date);
       const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
       
@@ -63,267 +259,78 @@ const HealthJourneyTimeline: React.FC<HealthJourneyTimelineProps> = ({
       }
       
       groups[monthYear].push(event);
-      return groups;
-    }, {} as Record<string, TimelineEvent[]>);
-  };
+    });
+    
+    return groups;
+  }, [events, filterType, showImportantOnly]);
 
-  const groupedEvents = groupEventsByMonth(events);
+  // Toggle event expansion
+  const toggleEventExpansion = useCallback((eventId: number) => {
+    setExpandedEventId(prevId => prevId === eventId ? null : eventId);
+  }, []);
   
-  // Sort groups by date (most recent first)
-  const sortedMonths = Object.keys(groupedEvents).sort((a, b) => {
-    const dateA = new Date(groupedEvents[a][0].date);
-    const dateB = new Date(groupedEvents[b][0].date);
-    return dateB.getTime() - dateA.getTime();
-  });
-
-  const getEventIcon = (type: TimelineEventType) => {
-    switch (type) {
-      case 'appointment':
-        return '👨‍⚕️';
-      case 'diagnosis':
-        return '🔍';
-      case 'medication':
-        return '💊';
-      case 'procedure':
-        return '🏥';
-      case 'test':
-        return '🧪';
-      case 'journal':
-        return '📝';
-      case 'rights-issue':
-        return '⚠️';
-      default:
-        return '📌';
-    }
-  };
-
-  const toggleEventExpand = (eventId: number) => {
-    if (expandedEventId === eventId) {
-      setExpandedEventId(null);
-    } else {
-      setExpandedEventId(eventId);
-    }
-  };
-
-  return (
-    <div className={styles.timelineContainer}>
-      <div className={styles.timelineHeader}>
-        <h2 className={styles.timelineTitle}>Healthcare Journey Timeline</h2>
-        <div className={styles.timelineControls}>
-          <div className={styles.filterContainer}>
-            <select 
-              className={styles.filterSelect}
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value as TimelineEventType | 'all')}
-              aria-label="Filter timeline by event type"
-            >
-              <option value="all">All Events</option>
-              <option value="appointment">Appointments</option>
-              <option value="diagnosis">Diagnoses</option>
-              <option value="medication">Medications</option>
-              <option value="procedure">Procedures</option>
-              <option value="test">Tests</option>
-              <option value="journal">Journal Entries</option>
-              <option value="rights-issue">Rights Issues</option>
-              <option value="other">Other</option>
-            </select>
-            
-            <label className={styles.importantFilterLabel}>
-              <input 
-                type="checkbox" 
-                checked={showImportantOnly}
-                onChange={() => setShowImportantOnly(!showImportantOnly)}
-              />
-              <span>Important only</span>
-            </label>
-          </div>
-          
+  // Empty state for no events
+  if (Object.keys(groupedEvents).length === 0) {
+    return (
+      <div className={styles.timelineContainer}>
+        <TimelineFilter 
+          filterType={filterType}
+          setFilterType={setFilterType}
+          showImportantOnly={showImportantOnly}
+          setShowImportantOnly={setShowImportantOnly}
+        />
+        
+        <div className={styles.emptyTimeline}>
+          <p>No events to display. {filterType !== 'all' || showImportantOnly ? 'Try changing the filters or ' : ''} Add your first health journey event.</p>
           {onAddEvent && (
-            <button 
-              className={styles.addEventButton}
-              onClick={onAddEvent}
-              aria-label="Add new timeline event"
-            >
+            <button onClick={onAddEvent} className={styles.addEventButton}>
               Add Event
             </button>
           )}
         </div>
       </div>
+    );
+  }
+  
+  return (
+    <div className={styles.timelineContainer}>
+      <TimelineFilter 
+        filterType={filterType}
+        setFilterType={setFilterType}
+        showImportantOnly={showImportantOnly}
+        setShowImportantOnly={setShowImportantOnly}
+      />
       
-      {sortedMonths.length === 0 ? (
-        <div className={styles.emptyState}>
-          <p>No events match your current filters.</p>
-          {filterType !== 'all' || showImportantOnly ? (
-            <button
-              className={styles.resetButton}
-              onClick={() => {
-                setFilterType('all');
-                setShowImportantOnly(false);
-              }}
-            >
-              Reset filters
-            </button>
-          ) : (
-            onAddEvent && (
-              <button
-                className={styles.addEventButton}
-                onClick={onAddEvent}
-              >
-                Add your first event
-              </button>
-            )
-          )}
-        </div>
-      ) : (
-        <div className={styles.timelineContent}>
-          {sortedMonths.map(month => (
-            <div key={month} className={styles.timelineMonth}>
-              <h3 className={styles.monthHeader}>{month}</h3>
-              
-              <div className={styles.eventsContainer}>
-                {groupedEvents[month]
-                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                  .map(event => (
-                    <div 
-                      key={event.id} 
-                      className={`${styles.eventCard} ${event.important ? styles.importantEvent : ''} ${event.type === 'rights-issue' ? styles.rightsIssueEvent : ''}`}
-                    >
-                      <div 
-                        className={styles.eventHeader}
-                        onClick={() => toggleEventExpand(event.id)}
-                      >
-                        <div className={styles.eventIcon}>
-                          {getEventIcon(event.type)}
-                        </div>
-                        
-                        <div className={styles.eventSummary}>
-                          <h4 className={styles.eventTitle}>{event.title}</h4>
-                          <div className={styles.eventMeta}>
-                            <time className={styles.eventDate}>
-                              {new Date(event.date).toLocaleDateString()} {new Date(event.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                            </time>
-                            {event.provider && (
-                              <span className={styles.eventProvider}>{event.provider}</span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className={styles.eventExpander}>
-                          {expandedEventId === event.id ? '−' : '+'}
-                        </div>
-                      </div>
-                      
-                      {expandedEventId === event.id && (
-                        <div className={styles.eventDetails}>
-                          {event.description && (
-                            <div className={styles.detailSection}>
-                              <h5 className={styles.detailTitle}>Description</h5>
-                              <p className={styles.eventDescription}>{event.description}</p>
-                            </div>
-                          )}
-                          
-                          {event.location && (
-                            <div className={styles.detailSection}>
-                              <h5 className={styles.detailTitle}>Location</h5>
-                              <p>{event.location}</p>
-                            </div>
-                          )}
-                          
-                          {event.patientRightsRelevance && event.patientRightsRelevance.length > 0 && (
-                            <div className={styles.detailSection}>
-                              <h5 className={styles.detailTitle}>Related Patient Rights</h5>
-                              <ul className={styles.rightsList}>
-                                {event.patientRightsRelevance.map((right, idx) => (
-                                  <li key={idx} className={styles.rightsItem}>
-                                    {right}
-                                  </li>
-                                ))}
-                              </ul>
-                              <Link to="/resources/1" className={styles.resourceLink}>
-                                View Patient Bill of Rights
-                              </Link>
-                            </div>
-                          )}
-                          
-                          {event.relatedJournalEntries && event.relatedJournalEntries.length > 0 && (
-                            <div className={styles.detailSection}>
-                              <h5 className={styles.detailTitle}>Related Journal Entries</h5>
-                              <ul className={styles.journalList}>
-                                {event.relatedJournalEntries.map(entry => (
-                                  <li key={entry.id} className={styles.journalItem}>
-                                    <Link to={`/journal?entry=${entry.id}`} className={styles.journalLink}>
-                                      {entry.title}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          
-                          {event.relatedDocuments && event.relatedDocuments.length > 0 && (
-                            <div className={styles.detailSection}>
-                              <h5 className={styles.detailTitle}>Related Documents</h5>
-                              <ul className={styles.documentList}>
-                                {event.relatedDocuments.map(doc => (
-                                  <li key={doc.id} className={styles.documentItem}>
-                                    <Link to={`/documents/${doc.id}`} className={styles.documentLink}>
-                                      {doc.name}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          
-                          {event.followUpNeeded && (
-                            <div className={styles.detailSection}>
-                              <h5 className={styles.detailTitle}>Follow-up</h5>
-                              <p className={styles.followUpInfo}>
-                                {event.followUpDate 
-                                  ? `Follow-up needed by ${new Date(event.followUpDate).toLocaleDateString()}`
-                                  : 'Follow-up needed'
-                                }
-                              </p>
-                            </div>
-                          )}
-                          
-                          <div className={styles.eventActions}>
-                            {onEditEvent && (
-                              <button 
-                                className={styles.actionButton}
-                                onClick={() => onEditEvent(event.id)}
-                              >
-                                Edit
-                              </button>
-                            )}
-                            
-                            <Link 
-                              to={`/journal/new?relatedEvent=${event.id}`} 
-                              className={styles.actionButton}
-                            >
-                              Add Journal Entry
-                            </Link>
-                            
-                            {onDeleteEvent && (
-                              <button 
-                                className={`${styles.actionButton} ${styles.deleteButton}`}
-                                onClick={() => onDeleteEvent(event.id)}
-                              >
-                                Delete
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
+      <div className={styles.timeline}>
+        {Object.entries(groupedEvents).map(([monthYear, monthEvents]) => (
+          <div key={monthYear} className={styles.timelineMonth}>
+            <h3 className={styles.monthHeader}>{monthYear}</h3>
+            
+            <div className={styles.monthEvents}>
+              {monthEvents.map(event => (
+                <TimelineEventItem
+                  key={event.id}
+                  event={event}
+                  isExpanded={expandedEventId === event.id}
+                  toggleExpand={() => toggleEventExpansion(event.id)}
+                  onEdit={onEditEvent}
+                  onDelete={onDeleteEvent}
+                />
+              ))}
             </div>
-          ))}
+          </div>
+        ))}
+      </div>
+      
+      {onAddEvent && (
+        <div className={styles.addEventContainer}>
+          <button onClick={onAddEvent} className={styles.addEventButton}>
+            Add Event
+          </button>
         </div>
       )}
     </div>
   );
 };
 
-export default HealthJourneyTimeline;
+export default memo(HealthJourneyTimeline);

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './LoginPage.module.css';
 import { FiUser, FiLock, FiMail, FiArrowRight } from 'react-icons/fi';
+import { useAuth } from '../contexts/AuthContext';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { login, isAuthenticated, error: authError, clearError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'patient' | 'advocate' | 'provider'>('patient');
@@ -12,8 +14,23 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Set error from auth context
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+    }
+  }, [authError]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearError();
     setError('');
     
     if (!email || !password) {
@@ -23,19 +40,11 @@ const LoginPage: React.FC = () => {
     
     try {
       setIsLoading(true);
-      
-      // This would be replaced with an actual API call in production
-      setTimeout(() => {
-        setIsLoading(false);
-        // Simulate successful login
-        console.log(`Logging in as ${role} with email: ${email}`);
-        navigate('/dashboard');
-      }, 1500);
-      
+      await login({ email, password });
+      // The redirect will happen automatically via the first useEffect
     } catch (err) {
       setIsLoading(false);
-      setError('Invalid email or password. Please try again.');
-      console.error('Login error:', err);
+      // Error is set via the second useEffect from auth context
     }
   };
 

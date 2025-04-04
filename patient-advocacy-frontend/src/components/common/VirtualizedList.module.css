@@ -1,0 +1,23 @@
+.virtualizedContainer {
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+.virtualizedContent {
+  will-change: transform;
+}
+
+.virtualizedItems {
+  position: absolute;
+  width: 100%;
+  will-change: transform;
+}
+
+.virtualizedItem {
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4a90e2">
+  <title>Offline - Patient Advocacy Platform</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f8f9fa;
+      color: #333;
+      text-align: center;
+      padding: 0 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #4a90e2;
+      margin-bottom: 20px;
+    }
+    .icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      color: #4a90e2;
+    }
+    p {
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 30px 0;
+    }
+    .feature {
+      background-color: #f0f7ff;
+      border-radius: 8px;
+      padding: 15px;
+      width: 100%;
+      max-width: 250px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .feature h3 {
+      color: #2a6fc9;
+      margin-top: 0;
+    }
+    .button {
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 20px;
+    }
+    .button:hover {
+      background-color: #2a6fc9;
+    }
+    .cached-content {
+      margin-top: 30px;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📶</div>
+    <h1>You're Offline</h1>
+    <p>It looks like you're currently offline. Don't worry! Many features of the Patient Advocacy Platform are still available while you're offline.</p>
+    
+    <div class="features">
+      <div class="feature">
+        <h3>Symptom Tracking</h3>
+        <p>You can still log your symptoms and health data. They'll sync automatically when you're back online.</p>
+      </div>
+      <div class="feature">
+        <h3>Health Journal</h3>
+        <p>View your previously cached journal entries and create new ones that will sync later.</p>
+      </div>
+      <div class="feature">
+        <h3>Patient Rights</h3>
+        <p>Access important patient rights information that has been saved for offline use.</p>
+      </div>
+    </div>
+    
+    <p>Any changes you make while offline will automatically sync when your connection is restored.</p>
+    
+    <button class="button" id="reload-button">Retry Connection</button>
+    
+    <div class="cached-content" id="cached-content-list">
+      <h2>Available Offline Content</h2>
+      <p>Loading available content...</p>
+    </div>
+  </div>
+
+  <script>
+    // Retry connection when button is clicked
+    document.getElementById('reload-button').addEventListener('click', function() {
+      window.location.reload();
+    });
+
+    // Display cached pages that are available offline
+    if ('caches' in window) {
+      caches.open('patient-advocacy-cache-v1').then(function(cache) {
+        return cache.keys().then(function(requests) {
+          const contentList = document.getElementById('cached-content-list');
+          if (requests.length > 0) {
+            let html = '<h2>Available Offline Content</h2><ul>';
+            
+            requests.forEach(function(request) {
+              // Only display HTML pages (not assets)
+              if (request.url.endsWith('.html') || 
+                  request.url.endsWith('/') || 
+                  !request.url.includes('.')) {
+                
+                const url = new URL(request.url);
+                let pageName = url.pathname;
+                
+                // Make the path more readable
+                if (pageName === '/' || pageName === '/index.html') {
+                  pageName = 'Home Page';
+                } else {
+                  // Remove trailing slash and .html extension
+                  pageName = pageName.replace(/\/$/, '').replace('.html', '');
+                  // Convert to title case
+                  pageName = pageName.split('/').pop()
+                    .replace(/-/g, ' ')
+                    .replace(/\b\w/g, l => l.toUpperCase());
+                }
+                
+                html += `<li><a href="${url.pathname}">${pageName}</a></li>`;
+              }
+            });
+            
+            html += '</ul>';
+            contentList.innerHTML = html;
+          } else {
+            contentList.innerHTML = '<h2>Available Offline Content</h2><p>No pages are currently cached for offline use.</p>';
+          }
+        });
+      }).catch(function() {
+        const contentList = document.getElementById('cached-content-list');
+        contentList.innerHTML = '<h2>Available Offline Content</h2><p>Unable to check for cached content.</p>';
+      });
+    }
+  </script>
+</body>
+</html>

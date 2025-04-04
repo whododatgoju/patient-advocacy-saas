@@ -1,7 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import Button from '../common/Button';
 import styles from './MainLayout.module.css';
+import { FiMenu, FiX } from 'react-icons/fi';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -12,6 +13,27 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   children, 
   role = 'patient' 
 }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+  
+  // Prevent scrolling when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   const roleStyle = {
     patient: styles.logoPatient,
     advocate: styles.logoAdvocate,
@@ -35,24 +57,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 <span className={roleStyle[role]}>Patient Advocacy Platform</span>
               </Link>
             </div>
+            
+            {/* Desktop Navigation */}
             <nav className={styles.nav}>
-              <Link to="/" className={styles.navLink}>Home</Link>
-              <Link to="/dashboard" className={styles.navLink}>Dashboard</Link>
-              <Link to="/journal" className={styles.navLink}>Health Journal</Link>
-              <Link to="/schedule-call" className={styles.navLink}>Video Calls</Link>
-              <Link to="/resources" className={styles.navLink}>Resources</Link>
-              <Link to="/advocate-match" className={styles.navLink}>Find Advocate</Link>
+              <Link to="/" className={`${styles.navLink} ${location.pathname === '/' ? styles.activeNavLink : ''}`}>Home</Link>
+              <Link to="/dashboard" className={`${styles.navLink} ${location.pathname === '/dashboard' ? styles.activeNavLink : ''}`}>Dashboard</Link>
+              <Link to="/journal" className={`${styles.navLink} ${location.pathname === '/journal' ? styles.activeNavLink : ''}`}>Health Journal</Link>
+              <Link to="/schedule-call" className={`${styles.navLink} ${location.pathname === '/schedule-call' ? styles.activeNavLink : ''}`}>Video Calls</Link>
+              <Link to="/resources" className={`${styles.navLink} ${location.pathname === '/resources' ? styles.activeNavLink : ''}`}>Resources</Link>
+              <Link to="/advocate-match" className={`${styles.navLink} ${location.pathname === '/advocate-match' ? styles.activeNavLink : ''}`}>Find Advocate</Link>
             </nav>
             
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <div style={{
-                padding: '0.25rem 0.75rem', 
-                borderRadius: '9999px', 
-                fontSize: '0.75rem', 
-                marginRight: '1rem', 
-                color: 'white', 
-                backgroundColor: `var(--color-${role})`
-              }}>
+            <div className={styles.profileSection}>
+              <div className={styles.roleLabel} style={{ backgroundColor: `var(--color-${role})` }}>
                 {roleLabel[role]}
               </div>
               
@@ -65,9 +82,83 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 </Button>
               </Link>
             </div>
+            
+            {/* Mobile Menu Button */}
+            <button 
+              className={styles.mobileMenuButton}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {mobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            </button>
           </div>
         </div>
       </header>
+      
+      {/* Mobile Navigation Overlay */}
+      <div className={`${styles.mobileNav} ${mobileMenuOpen ? styles.mobileNavOpen : ''}`}>
+        <div className={styles.mobileNavContent}>
+          <nav className={styles.mobileNavLinks}>
+            <Link 
+              to="/" 
+              className={`${styles.mobileNavLink} ${location.pathname === '/' ? styles.activeMobileNavLink : ''}`}
+            >
+              Home
+            </Link>
+            <Link 
+              to="/dashboard" 
+              className={`${styles.mobileNavLink} ${location.pathname === '/dashboard' ? styles.activeMobileNavLink : ''}`}
+            >
+              Dashboard
+            </Link>
+            <Link 
+              to="/journal" 
+              className={`${styles.mobileNavLink} ${location.pathname === '/journal' ? styles.activeMobileNavLink : ''}`}
+            >
+              Health Journal
+            </Link>
+            <Link 
+              to="/schedule-call" 
+              className={`${styles.mobileNavLink} ${location.pathname === '/schedule-call' ? styles.activeMobileNavLink : ''}`}
+            >
+              Video Calls
+            </Link>
+            <Link 
+              to="/resources" 
+              className={`${styles.mobileNavLink} ${location.pathname === '/resources' ? styles.activeMobileNavLink : ''}`}
+            >
+              Resources
+            </Link>
+            <Link 
+              to="/advocate-match" 
+              className={`${styles.mobileNavLink} ${location.pathname === '/advocate-match' ? styles.activeMobileNavLink : ''}`}
+            >
+              Find Advocate
+            </Link>
+            <Link 
+              to="/profile" 
+              className={`${styles.mobileNavLink} ${location.pathname === '/profile' ? styles.activeMobileNavLink : ''}`}
+            >
+              My Profile
+            </Link>
+          </nav>
+          
+          <div className={styles.mobileNavFooter}>
+            <div className={styles.mobileRoleLabel} style={{ backgroundColor: `var(--color-${role})` }}>
+              {roleLabel[role]}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Backdrop */}
+      {mobileMenuOpen && (
+        <div 
+          className={styles.backdrop} 
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
       
       {/* Main Content */}
       <main className={styles.main}>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import styles from './ProfilePage.module.css';
-import { FiEdit2, FiCheck, FiX, FiMapPin, FiMail, FiPhone, FiLock, FiSettings, FiShield, FiCalendar } from 'react-icons/fi';
+import { FiEdit2, FiCheck, FiX, FiMapPin, FiMail, FiPhone, FiLock, FiSettings, FiShield, FiCalendar, FiBell } from 'react-icons/fi';
+import NotificationManager from '../components/common/NotificationManager';
 
 interface UserProfile {
   id: string;
@@ -420,6 +421,16 @@ const ProfilePage: React.FC = () => {
             {activeSection === 'privacy' && (
               <div className={styles.privacySection}>
                 <h2 className={styles.sectionTitle}>Privacy Settings</h2>
+                
+                {/* Notification Settings */}
+                <div className={styles.settingsCard}>
+                  <h3 className={styles.settingsCardTitle}>
+                    <FiBell className={styles.settingIcon} />
+                    Notification Settings
+                  </h3>
+                  <NotificationManager />
+                </div>
+                
                 <div className={styles.settingsCard}>
                   <h3 className={styles.settingsCardTitle}>Profile Visibility</h3>
                   <div className={styles.settingItem}>

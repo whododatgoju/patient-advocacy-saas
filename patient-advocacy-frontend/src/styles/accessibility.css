@@ -1,0 +1,200 @@
+/* ============================
+   ACCESSIBILITY STYLES
+   ============================ */
+
+/* High Contrast Mode */
+.high-contrast {
+  --primary-color: #0074cc;
+  --primary-hover: #005ea6;
+  --secondary-color: #000000;
+  --text-color: #000000;
+  --background-color: #ffffff;
+  --border-color: #000000;
+  --error-color: #cc0000;
+  --success-color: #007700;
+  --warning-color: #cc7700;
+  --focus-outline: 3px solid #0074cc;
+}
+
+.high-contrast button,
+.high-contrast .button {
+  border: 2px solid #000000;
+  color: #ffffff;
+  background-color: #000000;
+}
+
+.high-contrast a {
+  color: #0000EE;
+  text-decoration: underline;
+}
+
+.high-contrast a:visited {
+  color: #551A8B;
+}
+
+.high-contrast input,
+.high-contrast select,
+.high-contrast textarea {
+  border: 2px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Large Text Mode */
+.large-text {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.large-text h1 {
+  font-size: 2.5em;
+}
+
+.large-text h2 {
+  font-size: 2em;
+}
+
+.large-text h3 {
+  font-size: 1.75em;
+}
+
+.large-text button,
+.large-text .button,
+.large-text input,
+.large-text select,
+.large-text textarea {
+  font-size: 1.2em;
+  padding: 12px 20px;
+}
+
+.large-text .form-control {
+  margin-bottom: 20px;
+}
+
+/* Reduce Motion */
+.reduce-motion * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Screen Reader Optimized */
+.screen-reader-optimized:focus {
+  outline: var(--focus-outline);
+}
+
+.screen-reader-optimized button:not([aria-label]),
+.screen-reader-optimized a:not([aria-label]) {
+  position: relative;
+}
+
+.screen-reader-optimized .icon-only {
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+}
+
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000000;
+  color: #ffffff;
+  padding: 8px;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Keyboard Focus Visible */
+.keyboard-focus-visible *:focus {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus Indicators */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* Form Element Improvements */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 24px;
+  height: 24px;
+}
+
+/* Improved Button Contrasts */
+button.primary,
+.button.primary {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 4px;
+  border: none;
+  font-weight: bold;
+}
+
+button.secondary,
+.button.secondary {
+  background-color: white;
+  color: var(--primary-color);
+  padding: 12px 20px;
+  border-radius: 4px;
+  border: 2px solid var(--primary-color);
+  font-weight: bold;
+}
+
+/* Improved Visual Feedback */
+.error-message {
+  color: var(--error-color);
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.success-message {
+  color: var(--success-color);
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+/* Keyboard Navigation Improvements */
+[tabindex]:not([tabindex="-1"]):focus {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* Dialog/Modal Improvements */
+[role="dialog"],
+[role="alertdialog"] {
+  outline: none;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[role="dialog"] [role="document"],
+[role="alertdialog"] [role="document"] {
+  padding: 20px;
+}

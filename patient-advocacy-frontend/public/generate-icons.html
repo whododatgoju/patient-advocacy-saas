@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Icon Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #4a90e2;
+            text-align: center;
+        }
+        .instructions {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .icon-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .icon-container {
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+            background-color: white;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #3a80d2;
+        }
+        .download-all {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Patient Advocacy PWA Icon Generator</h1>
+    
+    <div class="instructions">
+        <p>This tool generates placeholder icons for your Patient Advocacy PWA. Click on each "Download" button to save the icons to your device, then move them to the <code>/public/icons/</code> directory.</p>
+        <p>For production, we recommend replacing these with professionally designed icons that match your brand.</p>
+    </div>
+    
+    <div class="icon-grid" id="iconGrid"></div>
+    
+    <button class="download-all" id="downloadAllBtn">Download All Icons</button>
+    
+    <script>
+        // Icon sizes required for the PWA
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        // Theme color for the app
+        const themeColor = '#4a90e2';
+        
+        // Icon grid container
+        const iconGrid = document.getElementById('iconGrid');
+        
+        // Function to draw an icon
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas dimensions
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Background
+            ctx.fillStyle = themeColor;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Inner circle
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Text
+            ctx.fillStyle = themeColor;
+            ctx.font = `bold ${size/4}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('PA', size/2, size/2);
+            
+            return canvas;
+        }
+        
+        // Create and display icons for each size
+        sizes.forEach(size => {
+            // Create container
+            const container = document.createElement('div');
+            container.className = 'icon-container';
+            
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            drawIcon(canvas, size);
+            
+            // Create label
+            const label = document.createElement('div');
+            label.textContent = `${size}x${size}`;
+            
+            // Create download button
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = 'Download';
+            downloadBtn.onclick = () => {
+                const link = document.createElement('a');
+                link.download = `icon-${size}x${size}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
+            
+            // Add to container
+            container.appendChild(canvas);
+            container.appendChild(label);
+            container.appendChild(downloadBtn);
+            
+            // Add to grid
+            iconGrid.appendChild(container);
+        });
+        
+        // Download all button
+        document.getElementById('downloadAllBtn').addEventListener('click', () => {
+            sizes.forEach(size => {
+                const canvas = document.createElement('canvas');
+                drawIcon(canvas, size);
+                
+                const link = document.createElement('a');
+                link.download = `icon-${size}x${size}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+            alert('All icons downloaded! Please move them to your /public/icons/ directory.');
+        });
+    </script>
+</body>
+</html>

@@ -23,7 +23,7 @@ const connectToDatabase = async () => {
     return cachedDb;
   }
   
-  const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://[your-mongodb-uri]';
+  const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://dcampos2014:YOUR_ACTUAL_PASSWORD@cluster0.7gp1tzu.mongodb.net/patient_advocacy?retryWrites=true&writeConcern=majority';
   
   try {
     // Connect to MongoDB Atlas (required for serverless)

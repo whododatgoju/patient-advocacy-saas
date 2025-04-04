@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './SignupPage.module.css';
 import { FiUser, FiLock, FiMail, FiArrowRight, FiPhone, FiMapPin, FiCheckCircle } from 'react-icons/fi';
+import { useAuth } from '../contexts/AuthContext';
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
+  const { signup, isAuthenticated, error: authError, clearError } = useAuth();
   const [step, setStep] = useState(1);
   const [role, setRole] = useState<'patient' | 'advocate' | 'provider'>('patient');
   const [formData, setFormData] = useState({
@@ -80,17 +82,20 @@ const SignupPage: React.FC = () => {
     setStep(2);
   };
 
-  // Handle form submission
+  // Submit the form and create a new account
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearError();
     
-    if (!termsAccepted) {
-      setErrors({ ...errors, terms: 'You must accept the terms and conditions' });
-      return;
-    }
-    
-    // Role-specific validation
+    // Perform validation
     const newErrors: Record<string, string> = {};
+    
+    // Common validations
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    // Role-specific validations
     if (role === 'patient') {
       if (!formData.medicalConditions) newErrors.medicalConditions = 'This field is required';
     } else if (role === 'advocate') {
@@ -110,17 +115,27 @@ const SignupPage: React.FC = () => {
     try {
       setIsLoading(true);
       
-      // This would be replaced with an actual API call in production
-      setTimeout(() => {
-        setIsLoading(false);
-        // Navigate to success page or dashboard
-        console.log(`Registered as ${role}:`, formData);
-        navigate('/signup-success');
-      }, 1500);
+      // Format data for API
+      const signupData = {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        password: formData.password,
+        role,
+        phone: formData.phone,
+        location: formData.location,
+        // Add role-specific fields to bio
+        bio: role === 'patient' 
+          ? `Medical Conditions: ${formData.medicalConditions}\nPrimary Concerns: ${formData.primaryConcerns}\nInsurance: ${formData.insuranceProvider}`
+          : role === 'advocate'
+          ? `Specializations: ${formData.specializations}\nExperience: ${formData.yearsOfExperience} years\nLanguages: ${formData.languages}`
+          : `Organization: ${formData.organization}\nTitle: ${formData.title}\nLicensure: ${formData.licensure}`
+      };
+      
+      await signup(signupData);
+      // Navigate will happen automatically due to isAuthenticated change
     } catch (err) {
       setIsLoading(false);
-      setErrors({ ...errors, general: 'Registration failed. Please try again.' });
-      console.error('Signup error:', err);
+      // Error will be set via authError
     }
   };
 
@@ -289,6 +304,20 @@ const SignupPage: React.FC = () => {
         return null;
     }
   };
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Set error from auth context
+  useEffect(() => {
+    if (authError) {
+      setErrors({ ...errors, general: authError });
+    }
+  }, [authError, errors]);
 
   return (
     <div className={styles.signupPage}>

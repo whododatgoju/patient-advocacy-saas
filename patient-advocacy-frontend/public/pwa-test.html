@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Advocacy PWA Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1 {
+            color: #4a90e2;
+            border-bottom: 2px solid #e6e6e6;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        .test-section {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .test-button:hover {
+            background-color: #3a7bc8;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .failure {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .info {
+            background-color: #cce5ff;
+            color: #004085;
+            border: 1px solid #b8daff;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        ul {
+            margin-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Patient Advocacy PWA Test Tool</h1>
+    <p>This tool helps you verify that your Progressive Web App features are working correctly. Run the tests below to check each feature.</p>
+    
+    <div class="test-section">
+        <h2>1. Service Worker Registration</h2>
+        <p>Check if the service worker is properly registered.</p>
+        <button id="check-sw" class="test-button">Check Service Worker</button>
+        <div id="sw-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Web App Manifest</h2>
+        <p>Verify that the Web App Manifest is properly configured.</p>
+        <button id="check-manifest" class="test-button">Check Manifest</button>
+        <div id="manifest-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Offline Capability</h2>
+        <p>Test if the app works offline by caching important resources.</p>
+        <button id="check-offline" class="test-button">Test Offline Mode</button>
+        <div id="offline-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. App Installation</h2>
+        <p>Check if the app is installable as a PWA.</p>
+        <button id="check-install" class="test-button">Check Installability</button>
+        <div id="install-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. Push Notification Support</h2>
+        <p>Verify that push notifications are supported.</p>
+        <button id="check-notifications" class="test-button">Test Notifications</button>
+        <div id="notifications-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Next Steps After Testing</h2>
+        <p>After completing these tests, consider the following:</p>
+        <ul>
+            <li><strong>Generate Icons:</strong> Use the icon generator to create all required PWA icons and place them in the <code>/public/icons/</code> directory.</li>
+            <li><strong>Deploy to Netlify:</strong> Use your Netlify account to deploy the updated code with PWA features.</li>
+            <li><strong>Audit with Lighthouse:</strong> Run a Lighthouse audit in Chrome DevTools to check your PWA score and identify any remaining issues.</li>
+            <li><strong>Test on Multiple Devices:</strong> Verify PWA functionality on various devices and platforms.</li>
+        </ul>
+    </div>
+    
+    <script>
+        // Service Worker Check
+        document.getElementById('check-sw').addEventListener('click', async () => {
+            const resultElem = document.getElementById('sw-result');
+            resultElem.style.display = 'block';
+            
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    
+                    if (registrations.length > 0) {
+                        resultElem.className = 'result success';
+                        resultElem.innerHTML = '✅ Service worker is registered successfully! <br><br>' +
+                            `<strong>Scope:</strong> ${registrations[0].scope}<br>` +
+                            `<strong>Status:</strong> ${registrations[0].active ? 'Active' : 'Not active'}<br>` +
+                            `<strong>Update State:</strong> ${registrations[0].updateViaCache}`;
+                    } else {
+                        resultElem.className = 'result warning';
+                        resultElem.innerHTML = '⚠️ No service worker registrations found. Make sure service-worker.js is being registered properly.';
+                    }
+                } catch (error) {
+                    resultElem.className = 'result failure';
+                    resultElem.innerHTML = `❌ Error checking service worker: ${error.message}`;
+                }
+            } else {
+                resultElem.className = 'result failure';
+                resultElem.innerHTML = '❌ Service workers are not supported in this browser.';
+            }
+        });
+        
+        // Manifest Check
+        document.getElementById('check-manifest').addEventListener('click', async () => {
+            const resultElem = document.getElementById('manifest-result');
+            resultElem.style.display = 'block';
+            
+            try {
+                const response = await fetch('/manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    
+                    // Check important manifest properties
+                    const hasName = !!manifest.name;
+                    const hasShortName = !!manifest.short_name;
+                    const hasStartUrl = !!manifest.start_url;
+                    const hasDisplay = manifest.display === 'standalone' || manifest.display === 'fullscreen';
+                    const hasIcons = manifest.icons && manifest.icons.length > 0;
+                    
+                    if (hasName && hasShortName && hasStartUrl && hasDisplay && hasIcons) {
+                        resultElem.className = 'result success';
+                        resultElem.innerHTML = '✅ Manifest.json is valid and properly configured!<br><br>' +
+                            `<strong>Name:</strong> ${manifest.name}<br>` +
+                            `<strong>Short Name:</strong> ${manifest.short_name}<br>` +
+                            `<strong>Display Mode:</strong> ${manifest.display}<br>` +
+                            `<strong>Theme Color:</strong> ${manifest.theme_color}<br>` +
+                            `<strong>Icons:</strong> ${manifest.icons.length} icons defined`;
+                    } else {
+                        resultElem.className = 'result warning';
+                        resultElem.innerHTML = '⚠️ Manifest.json exists but may be missing required properties:<br><br>' +
+                            `<strong>Name:</strong> ${hasName ? '✅' : '❌'}<br>` +
+                            `<strong>Short Name:</strong> ${hasShortName ? '✅' : '❌'}<br>` +
+                            `<strong>Start URL:</strong> ${hasStartUrl ? '✅' : '❌'}<br>` +
+                            `<strong>Display Mode:</strong> ${hasDisplay ? '✅' : '❌'}<br>` +
+                            `<strong>Icons:</strong> ${hasIcons ? '✅' : '❌'}`;
+                    }
+                } else {
+                    resultElem.className = 'result failure';
+                    resultElem.innerHTML = `❌ Could not load manifest.json: ${response.status} ${response.statusText}`;
+                }
+            } catch (error) {
+                resultElem.className = 'result failure';
+                resultElem.innerHTML = `❌ Error checking manifest: ${error.message}`;
+            }
+        });
+        
+        // Offline Check
+        document.getElementById('check-offline').addEventListener('click', () => {
+            const resultElem = document.getElementById('offline-result');
+            resultElem.style.display = 'block';
+            
+            if ('caches' in window) {
+                caches.keys().then(cacheNames => {
+                    if (cacheNames.length > 0) {
+                        resultElem.className = 'result success';
+                        resultElem.innerHTML = '✅ Cache storage is being used. Your app may work offline!<br><br>' +
+                            `<strong>Cache Stores Found:</strong> ${cacheNames.length}<br>` +
+                            `<strong>Cache Names:</strong> ${cacheNames.join(', ')}<br><br>` +
+                            'To fully test offline functionality, open Chrome DevTools, go to Application > Service Workers, check "Offline", and try navigating the app.';
+                    } else {
+                        resultElem.className = 'result warning';
+                        resultElem.innerHTML = '⚠️ Cache storage API is available, but no caches found. Your service worker might not be caching resources yet.';
+                    }
+                }).catch(error => {
+                    resultElem.className = 'result failure';
+                    resultElem.innerHTML = `❌ Error checking cache: ${error.message}`;
+                });
+            } else {
+                resultElem.className = 'result failure';
+                resultElem.innerHTML = '❌ Cache API is not supported in this browser.';
+            }
+        });
+        
+        // Installation Check
+        document.getElementById('check-install').addEventListener('click', () => {
+            const resultElem = document.getElementById('install-result');
+            resultElem.style.display = 'block';
+            
+            // Check display mode
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                                (window.navigator as any).standalone === true;
+            
+            // Check service worker
+            const hasServiceWorker = 'serviceWorker' in navigator;
+            
+            // Check if manifest link exists
+            const hasManifest = !!document.querySelector('link[rel="manifest"]');
+            
+            if (isStandalone) {
+                resultElem.className = 'result success';
+                resultElem.innerHTML = '✅ This app is already installed and running in standalone mode!';
+            } else if (hasServiceWorker && hasManifest) {
+                resultElem.className = 'result success';
+                resultElem.innerHTML = '✅ This app meets the basic criteria for installation.<br><br>' +
+                    'To install the app, look for the install icon in your browser\'s address bar or menu.';
+            } else {
+                resultElem.className = 'result warning';
+                resultElem.innerHTML = '⚠️ This app may not be installable. Missing requirements:<br><br>' +
+                    `<strong>Service Worker:</strong> ${hasServiceWorker ? '✅' : '❌'}<br>` +
+                    `<strong>Web Manifest:</strong> ${hasManifest ? '✅' : '❌'}<br>` +
+                    `<strong>HTTPS:</strong> ${window.location.protocol === 'https:' ? '✅' : '❌'}`;
+            }
+        });
+        
+        // Notification Check
+        document.getElementById('check-notifications').addEventListener('click', async () => {
+            const resultElem = document.getElementById('notifications-result');
+            resultElem.style.display = 'block';
+            
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    resultElem.className = 'result success';
+                    resultElem.innerHTML = '✅ Notification permission is granted! Your app can send notifications.';
+                    
+                    // Optionally show a test notification
+                    try {
+                        if ('serviceWorker' in navigator) {
+                            const registration = await navigator.serviceWorker.ready;
+                            
+                            registration.showNotification('Patient Advocacy App', {
+                                body: 'This is a test notification',
+                                icon: '/icons/icon-128x128.png',
+                                badge: '/icons/icon-72x72.png'
+                            });
+                            
+                            resultElem.innerHTML += '<br><br>A test notification has been triggered!';
+                        }
+                    } catch (error) {
+                        resultElem.innerHTML += `<br><br>Error showing test notification: ${error.message}`;
+                    }
+                } else if (Notification.permission === 'denied') {
+                    resultElem.className = 'result failure';
+                    resultElem.innerHTML = '❌ Notification permission is denied. The user must update their browser settings to allow notifications.';
+                } else {
+                    resultElem.className = 'result info';
+                    resultElem.innerHTML = 'ℹ️ Notification permission has not been requested yet.<br><br>' +
+                        '<button id="request-notification" class="test-button">Request Permission</button>';
+                    
+                    document.getElementById('request-notification').addEventListener('click', async () => {
+                        try {
+                            const permission = await Notification.requestPermission();
+                            
+                            if (permission === 'granted') {
+                                resultElem.className = 'result success';
+                                resultElem.innerHTML = '✅ Notification permission granted!';
+                            } else {
+                                resultElem.className = 'result failure';
+                                resultElem.innerHTML = `❌ Notification permission ${permission}.`;
+                            }
+                        } catch (error) {
+                            resultElem.className = 'result failure';
+                            resultElem.innerHTML = `❌ Error requesting notification permission: ${error.message}`;
+                        }
+                    });
+                }
+            } else {
+                resultElem.className = 'result failure';
+                resultElem.innerHTML = '❌ Notifications are not supported in this browser.';
+            }
+        });
+    </script>
+</body>
+</html>

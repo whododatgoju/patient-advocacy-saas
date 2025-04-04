@@ -65,6 +65,8 @@
 .entryContent {
   color: var(--color-gray-700);
   margin-bottom: var(--spacing-2);
+  font-size: 1.125rem;
+  line-height: 1.5;
 }
 
 .entryTags {
@@ -115,18 +117,169 @@
   color: var(--color-gray-700);
 }
 
-.formInput,
-.formTextarea,
-.formSelect {
-  padding: var(--spacing-2) var(--spacing-3);
+.formInput {
+  width: 100%;
+  padding: var(--spacing-3);
+  font-size: 1.125rem;
+  line-height: 1.5;
   border: 1px solid var(--color-gray-300);
   border-radius: var(--radius-md);
-  font-size: 1rem;
 }
 
 .formTextarea {
-  min-height: 120px;
+  min-height: 200px;
   resize: vertical;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  padding: var(--spacing-3) var(--spacing-4);
+  width: 100%;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+}
+
+.formSelect {
+  width: 100%;
+  padding: var(--spacing-3);
+  font-size: 1.125rem;
+  line-height: 1.5;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+}
+
+.textareaContainer {
+  position: relative;
+  width: 100%;
+}
+
+.mediaButtons {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.speechButton,
+.videoButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-gray-300);
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.speechButton:hover,
+.videoButton:hover {
+  background-color: var(--color-gray-100);
+}
+
+.speechButton.listening {
+  background-color: rgba(255, 0, 0, 0.1);
+  border-color: rgba(255, 0, 0, 0.4);
+  animation: pulse 1.5s infinite;
+}
+
+.videoButton.recording {
+  background-color: rgba(255, 0, 0, 0.1);
+  border-color: rgba(255, 0, 0, 0.4);
+  animation: pulse 1.5s infinite;
+}
+
+.speechButton.processing {
+  background-color: rgba(255, 165, 0, 0.1);
+  border-color: rgba(255, 165, 0, 0.4);
+  animation: spin 1.5s infinite linear;
+  cursor: not-allowed;
+}
+
+.listeningIndicator,
+.recordingIndicator {
+  margin-top: var(--spacing-2);
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.errorIndicator {
+  margin-top: var(--spacing-2);
+  color: var(--color-error, #dc2626);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.videoPreviewContainer {
+  margin-top: var(--spacing-4);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-3);
+  background-color: var(--color-gray-50);
+}
+
+.videoPreviewTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-gray-800);
+  margin-bottom: var(--spacing-2);
+}
+
+.videoPreview,
+.liveVideo,
+.entryVideoPreview {
+  width: 100%;
+  max-height: 300px;
+  border-radius: var(--radius-md);
+  background-color: black;
+}
+
+.liveVideoContainer {
+  margin-top: var(--spacing-4);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.liveVideoContainer::before {
+  content: "Live";
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: rgba(220, 38, 38, 0.8);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  z-index: 10;
+}
+
+.removeVideoButton {
+  margin-top: var(--spacing-2);
+  background-color: var(--color-error, #dc2626);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.removeVideoButton:hover {
+  background-color: #b91c1c;
+}
+
+.entryVideo {
+  margin-top: var(--spacing-3);
 }
 
 .formActions {
@@ -208,4 +361,25 @@
   background-color: var(--color-primary);
   color: white;
   border-color: var(--color-primary);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

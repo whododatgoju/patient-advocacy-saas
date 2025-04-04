@@ -1,33 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import Button from '../components/common/Button';
 import styles from './JournalPage.module.css';
 
 // Mock data for journal entries
-const MOCK_ENTRIES = [
+const MOCK_ENTRIES: JournalEntry[] = [
   {
     id: 1,
-    date: '2025-04-03',
-    title: 'Started new medication',
-    content: 'Started taking the new medication prescribed by Dr. Johnson. Feeling a bit tired but otherwise good.',
-    mood: 'neutral',
-    tags: ['medication', 'tiredness']
+    date: '2023-12-01T10:30:00',
+    title: 'First Appointment with Dr. Smith',
+    content: 'Had my first appointment with Dr. Smith today. She was very thorough and listened to all my concerns. She recommended some tests and prescribed medication for my condition.',
+    mood: 'Happy',
+    tags: ['Doctor Visit', 'Medication'],
+    videoBlob: null as Blob | null
   },
   {
     id: 2,
-    date: '2025-04-02',
-    title: 'Great day with less pain',
-    content: 'Had significantly less joint pain today. Was able to go for a 20-minute walk without discomfort.',
-    mood: 'happy',
-    tags: ['pain', 'exercise', 'improvement']
+    date: '2023-12-05T14:45:00',
+    title: 'Started New Medication',
+    content: 'Started taking the new medication prescribed by Dr. Smith. Feeling a bit tired but no major side effects so far.',
+    mood: 'Neutral',
+    tags: ['Medication', 'Side Effects'],
+    videoBlob: null as Blob | null
   },
   {
     id: 3,
-    date: '2025-04-01',
-    title: 'Increased headaches',
-    content: 'Experiencing more frequent headaches, possibly related to the change in weather. Taking OTC pain relief as needed.',
-    mood: 'sad',
-    tags: ['headache', 'pain', 'weather']
+    date: '2023-12-10T09:15:00',
+    title: 'Follow-up Appointment',
+    content: 'Had a follow-up appointment today. My test results came back normal, which is a relief. Dr. Smith recommended continuing the medication for another month.',
+    mood: 'Happy',
+    tags: ['Test Results', 'Doctor Visit'],
+    videoBlob: null as Blob | null
   }
 ];
 
@@ -40,27 +43,195 @@ const MOOD_OPTIONS = [
   { value: 'anxious', label: 'Anxious', emoji: '😰' }
 ];
 
+// Define the type for a journal entry
+interface JournalEntry {
+  id: number;
+  date: string;
+  title: string;
+  content: string;
+  mood: string;
+  tags: string[];
+  videoBlob: Blob | null;
+}
+
 const JournalPage: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
-  const [entries, setEntries] = useState(MOCK_ENTRIES);
+  const [entries, setEntries] = useState<JournalEntry[]>(MOCK_ENTRIES);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMood, setSelectedMood] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const [isRecordingVideo, setIsRecordingVideo] = useState(false);
+  const [videoURL, setVideoURL] = useState<string | null>(null);
+  const [videoSupported, setVideoSupported] = useState(false);
+  const [showVideoPreview, setShowVideoPreview] = useState(false);
+  
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const videoChunksRef = useRef<Blob[]>([]);
   
   // New entry form state
-  const [newEntry, setNewEntry] = useState({
+  const [newEntry, setNewEntry] = useState<JournalEntry>({
+    id: 0,
+    date: '',
     title: '',
     content: '',
     mood: '',
-    tags: ''
+    tags: [],
+    videoBlob: null as Blob | null
   });
+
+  // Check if speech recognition is supported
+  useEffect(() => {
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      setSpeechSupported(true);
+    } else {
+      console.warn("Speech recognition is not supported in this browser.");
+    }
+    
+    // Check if video recording is supported
+    if (navigator.mediaDevices && 'getUserMedia' in navigator.mediaDevices) {
+      setVideoSupported(true);
+    } else {
+      console.warn("Video recording is not supported in this browser.");
+    }
+  }, []);
 
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setNewEntry({
-      ...newEntry,
-      [name]: value
-    });
+    
+    if (name === 'tags') {
+      setNewEntry({
+        ...newEntry,
+        tags: value ? value.split(',').map((tag: string) => tag.trim()) : []
+      });
+    } else {
+      setNewEntry({
+        ...newEntry,
+        [name]: value
+      });
+    }
+  };
+
+  // Start speech recognition
+  const toggleSpeechRecognition = () => {
+    if (!speechSupported) return;
+
+    // @ts-ignore: We've already checked if these APIs exist
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    if (!isListening) {
+      // Start listening
+      recognition.start();
+      setIsListening(true);
+      
+      let finalTranscript = newEntry.content;
+      
+      recognition.onresult = (event: any) => {
+        let interimTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += ' ' + transcript;
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+        
+        setNewEntry({
+          ...newEntry,
+          content: finalTranscript.trim() + (interimTranscript ? ' ' + interimTranscript : '')
+        });
+      };
+      
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error', event.error);
+        setIsListening(false);
+      };
+      
+      recognition.onend = () => {
+        // When speech recognition service disconnects
+        if (isListening) {
+          setIsListening(false);
+        }
+      };
+    } else {
+      // Stop listening
+      recognition.stop();
+      setIsListening(false);
+    }
+  };
+
+  // Toggle video recording
+  const toggleVideoRecording = async () => {
+    if (!videoSupported) return;
+
+    if (!isRecordingVideo) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: true, 
+          audio: true 
+        });
+        
+        // Display live preview
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play();
+        }
+        
+        // Start recording
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+        videoChunksRef.current = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            videoChunksRef.current.push(event.data);
+          }
+        };
+        
+        mediaRecorder.onstop = () => {
+          const videoBlob = new Blob(videoChunksRef.current, { type: 'video/webm' });
+          const url = URL.createObjectURL(videoBlob);
+          
+          setVideoURL(url);
+          setShowVideoPreview(true);
+          setNewEntry(prev => ({ ...prev, videoBlob }));
+          
+          // Stop all tracks in the stream
+          if (videoRef.current && videoRef.current.srcObject) {
+            const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+            tracks.forEach(track => track.stop());
+            videoRef.current.srcObject = null;
+          }
+        };
+        
+        mediaRecorder.start();
+        setIsRecordingVideo(true);
+      } catch (error) {
+        console.error("Error accessing camera and microphone:", error);
+      }
+    } else {
+      // Stop recording
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+        setIsRecordingVideo(false);
+      }
+    }
+  };
+  
+  // Remove video from entry
+  const removeVideo = () => {
+    setVideoURL(null);
+    setShowVideoPreview(false);
+    setNewEntry(prev => ({ ...prev, videoBlob: null }));
   };
 
   // Handle form submission
@@ -68,13 +239,14 @@ const JournalPage: React.FC = () => {
     e.preventDefault();
     
     // Create new entry
-    const entry = {
+    const entry: JournalEntry = {
       id: Date.now(),
-      date: new Date().toISOString().split('T')[0],
+      date: new Date().toISOString(),
       title: newEntry.title,
       content: newEntry.content,
       mood: newEntry.mood,
-      tags: newEntry.tags.split(',').map(tag => tag.trim())
+      tags: newEntry.tags,
+      videoBlob: newEntry.videoBlob
     };
     
     // Add to entries
@@ -82,10 +254,13 @@ const JournalPage: React.FC = () => {
     
     // Reset form
     setNewEntry({
+      id: 0,
+      date: '',
       title: '',
       content: '',
       mood: '',
-      tags: ''
+      tags: [],
+      videoBlob: null as Blob | null
     });
     
     // Hide form
@@ -167,14 +342,83 @@ const JournalPage: React.FC = () => {
 
               <div className={styles.formGroup}>
                 <label className={styles.formLabel} htmlFor="content">Journal Entry</label>
-                <textarea
-                  id="content"
-                  name="content"
-                  className={styles.formTextarea}
-                  value={newEntry.content}
-                  onChange={handleInputChange}
-                  required
-                />
+                <div className={styles.textareaContainer}>
+                  <textarea
+                    id="content"
+                    name="content"
+                    className={styles.formTextarea}
+                    value={newEntry.content}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <div className={styles.mediaButtons}>
+                    {speechSupported && (
+                      <button 
+                        type="button"
+                        className={`${styles.speechButton} ${isListening ? styles.listening : ''}`}
+                        onClick={toggleSpeechRecognition}
+                        title={isListening ? "Stop dictation" : "Start dictation"}
+                      >
+                        <span role="img" aria-label="microphone">
+                          {isListening ? '🔴' : '🎤'}
+                        </span>
+                      </button>
+                    )}
+                    
+                    {videoSupported && (
+                      <button 
+                        type="button"
+                        className={`${styles.videoButton} ${isRecordingVideo ? styles.recording : ''}`}
+                        onClick={toggleVideoRecording}
+                        title={isRecordingVideo ? "Stop recording" : "Record video"}
+                      >
+                        <span role="img" aria-label="video camera">
+                          {isRecordingVideo ? '🔴' : '📹'}
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {isListening && (
+                  <div className={styles.listeningIndicator}>
+                    Listening... Speak clearly into your microphone
+                  </div>
+                )}
+                {isRecordingVideo && (
+                  <div className={styles.recordingIndicator}>
+                    Recording video... Speak clearly and keep face in frame
+                  </div>
+                )}
+                
+                {/* Video preview area */}
+                {showVideoPreview && videoURL && (
+                  <div className={styles.videoPreviewContainer}>
+                    <h4 className={styles.videoPreviewTitle}>Video Preview</h4>
+                    <video 
+                      className={styles.videoPreview} 
+                      src={videoURL} 
+                      controls
+                    />
+                    <button 
+                      type="button" 
+                      className={styles.removeVideoButton}
+                      onClick={removeVideo}
+                    >
+                      Remove Video
+                    </button>
+                  </div>
+                )}
+                
+                {/* Video recording preview */}
+                {isRecordingVideo && (
+                  <div className={styles.liveVideoContainer}>
+                    <video 
+                      ref={videoRef}
+                      className={styles.liveVideo} 
+                      muted
+                    />
+                  </div>
+                )}
               </div>
 
               <div className={styles.formGroup}>
@@ -184,7 +428,7 @@ const JournalPage: React.FC = () => {
                   id="tags"
                   name="tags"
                   className={styles.formInput}
-                  value={newEntry.tags}
+                  value={newEntry.tags.join(', ')}
                   onChange={handleInputChange}
                   placeholder="e.g., headache, medication, exercise"
                 />
@@ -248,6 +492,15 @@ const JournalPage: React.FC = () => {
                         {tag}
                       </span>
                     ))}
+                  </div>
+                )}
+                {entry.videoBlob && (
+                  <div className={styles.entryVideo}>
+                    <video 
+                      className={styles.entryVideoPreview} 
+                      src={URL.createObjectURL(entry.videoBlob)} 
+                      controls
+                    />
                   </div>
                 )}
               </div>

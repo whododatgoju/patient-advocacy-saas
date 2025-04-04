@@ -3,6 +3,7 @@ import HomePage from './pages/HomePage'
 import DashboardPage from './pages/DashboardPage'
 import JournalPage from './pages/JournalPage'
 import ResourcesPage from './pages/ResourcesPage'
+import ResourceDetailsPage from './pages/ResourceDetailsPage'
 import AdvocateMatchPage from './pages/AdvocateMatchPage'
 import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
@@ -19,6 +20,7 @@ function App() {
         <Route path="/journal" element={<JournalPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/resources" element={<ResourcesPage />} />
+        <Route path="/resources/:id" element={<ResourceDetailsPage />} />
         <Route path="/advocate-match" element={<AdvocateMatchPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />

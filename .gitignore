@@ -73,3 +73,6 @@ ios/.xcode.env.local
 .cache/
 .temp/
 tmp/
+
+# Local Netlify folder
+.netlify

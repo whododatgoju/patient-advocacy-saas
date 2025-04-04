@@ -1,0 +1,756 @@
+.pageContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.pageHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.pageTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.pageSubtitle {
+  font-size: 1.2rem;
+  color: #5a6c7d;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.pageContent {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+}
+
+/* Filter Sidebar */
+.sidebar {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  height: fit-content;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.filtersContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.searchInput {
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #dce0e5;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.searchInput:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.filterSection {
+  margin-bottom: 1.5rem;
+}
+
+.filterSectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #2c3e50;
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checkboxItem {
+  display: flex;
+  align-items: center;
+}
+
+.checkboxItem input[type="checkbox"] {
+  margin-right: 0.5rem;
+  width: 16px;
+  height: 16px;
+}
+
+.checkboxLabel {
+  font-size: 0.95rem;
+  color: #4a5568;
+  cursor: pointer;
+}
+
+.rangeInput {
+  width: 100%;
+  margin: 0.5rem 0;
+}
+
+.rangeLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.resetFilters {
+  background-color: transparent;
+  color: #e53e3e;
+  border: 1px solid #e53e3e;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+
+.resetFilters:hover {
+  background-color: #e53e3e;
+  color: white;
+}
+
+/* Main Content */
+.mainContent {
+  width: 100%;
+}
+
+.resultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.resultsCount {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.sortOptions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sortSelect {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #dce0e5;
+  background-color: white;
+  color: #2d3748;
+  font-size: 0.95rem;
+}
+
+/* Advocates Grid */
+.advocatesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Advocate Card */
+.advocateCard {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.advocateCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.advocateCardHeader {
+  position: relative;
+  height: 160px;
+}
+
+.advocateCardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.specialtyBadge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background-color: rgba(44, 62, 80, 0.85);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.skillMatchBadge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: #2ecc71;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.advocateCardBody {
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.advocateRating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.starIcon {
+  color: #f39c12;
+}
+
+.advocateName {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.advocateLocation {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: #5a6c7d;
+  margin-bottom: 0.75rem;
+}
+
+.advocateTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.advocateTag {
+  background-color: #edf2f7;
+  color: #4a5568;
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+}
+
+.advocateFooterInfo {
+  margin-top: auto;
+}
+
+.advocateExperience {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.advocateCardFooter {
+  padding: 1rem;
+  border-top: 1px solid #edf2f7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.advocateAvailability {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.availableNow {
+  color: #2ecc71;
+}
+
+.availableSoon {
+  color: #f39c12;
+}
+
+.availableLater {
+  color: #3498db;
+}
+
+.connectButton {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.connectButton:hover {
+  background-color: #2980b9;
+}
+
+/* Quiz */
+.matchQuiz {
+  background-color: white;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.quizHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.quizTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.quizDescription {
+  color: #5a6c7d;
+}
+
+.quizProgress {
+  margin-bottom: 2rem;
+}
+
+.progressBar {
+  height: 8px;
+  background-color: #edf2f7;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #3498db;
+  transition: width 0.3s;
+}
+
+.questionContainer {
+  margin-bottom: 2rem;
+}
+
+.questionNumber {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-bottom: 0.5rem;
+}
+
+.questionText {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.optionButton {
+  background-color: white;
+  border: 1px solid #dce0e5;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.optionButton:hover {
+  border-color: #3498db;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.optionButtonSelected {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.quizNavigation {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.navButtonBack {
+  background-color: white;
+  color: #4a5568;
+  border: 1px solid #dce0e5;
+}
+
+.navButtonNext {
+  background-color: #3498db;
+  color: white;
+  border: none;
+}
+
+.navButtonDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.pageButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid #dce0e5;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pageButton:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.pageButton:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+.pageButtonDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageNumbers {
+  display: flex;
+}
+
+.pageNumber {
+  padding: 0.5rem 1rem;
+  border-top: 1px solid #dce0e5;
+  border-bottom: 1px solid #dce0e5;
+  border-right: 1px solid #dce0e5;
+  background-color: white;
+  cursor: pointer;
+}
+
+.activePage {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+/* No Results */
+.noResults {
+  text-align: center;
+  padding: 3rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.noResults h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.noResults p {
+  color: #5a6c7d;
+  margin-bottom: 1.5rem;
+}
+
+.retakeQuizBtn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.retakeQuizBtn:hover {
+  background-color: #2980b9;
+}
+
+/* Testimonials */
+.testimonialSection {
+  margin-top: 4rem;
+}
+
+.testimonialTitle {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+}
+
+.testimonialGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.testimonialCard {
+  background-color: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.testimonialText {
+  color: #4a5568;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.testimonialAuthor {
+  display: flex;
+  align-items: center;
+}
+
+.testimonialAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+
+.testimonialInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonialName {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.testimonialRole {
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+/* Mobile Filter Toggle */
+.mobileFilterToggle {
+  display: none;
+  width: 100%;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.mobileFilterToggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.mobileFilterToggle:hover {
+  background-color: #2980b9;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .pageContent {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    margin-bottom: 2rem;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, margin 0.3s ease-in-out;
+  }
+  
+  .sidebarCollapsed {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .mobileFilterToggle {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 1rem;
+  }
+  
+  .pageTitle {
+    font-size: 1.8rem;
+  }
+  
+  .pageSubtitle {
+    font-size: 1rem;
+  }
+  
+  .advocatesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .testimonialGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .advocateCardBody {
+    padding: 0.75rem;
+  }
+  
+  .advocateName {
+    font-size: 1.1rem;
+  }
+  
+  .resultsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .pagination {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  
+  .pageNumbers {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .pageNumber, .pageButton {
+    margin: 0.25rem;
+    border-radius: 4px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .advocatesGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pageContainer {
+    padding: 0.75rem;
+  }
+  
+  .matchQuiz {
+    padding: 1rem;
+  }
+  
+  .navButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .questionText {
+    font-size: 1.2rem;
+  }
+  
+  .testimonialCard {
+    padding: 1rem;
+  }
+  
+  .testimonialText {
+    font-size: 0.9rem;
+  }
+  
+  .advocateCardHeader {
+    height: 140px;
+  }
+  
+  .advocateCardBody {
+    padding: 0.75rem;
+  }
+  
+  .advocateBio {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .advocateTag {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) {
+  .advocateCard:hover {
+    transform: none;
+  }
+  
+  .optionButton, .navButton, .pageButton, .pageNumber {
+    padding: 0.8rem; /* Larger touch targets */
+  }
+  
+  .checkboxItem {
+    padding: 0.25rem 0;
+  }
+  
+  .checkboxItem input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+}

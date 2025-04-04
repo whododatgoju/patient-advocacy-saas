@@ -3,19 +3,13 @@ import HomePage from './pages/HomePage'
 import DashboardPage from './pages/DashboardPage'
 import JournalPage from './pages/JournalPage'
 import ResourcesPage from './pages/ResourcesPage'
+import AdvocateMatchPage from './pages/AdvocateMatchPage'
 
 // We'll add these pages as placeholders for now
 const ProfilePage = () => (
   <div className="p-8">
     <h1 className="text-3xl font-bold mb-4">Profile Page</h1>
     <p>This page will contain user profile management with editable fields.</p>
-  </div>
-);
-
-const AdvocateMatchPage = () => (
-  <div className="p-8">
-    <h1 className="text-3xl font-bold mb-4">Advocate Match Page</h1>
-    <p>This page will allow patients to match with advocates based on their specific needs.</p>
   </div>
 );
 

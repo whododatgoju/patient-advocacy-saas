@@ -554,6 +554,100 @@ app.post('/api/advocates/match', async (req, res) => {
   }
 });
 
+// Add a test user endpoint for easy testing and development
+app.get('/create-test-users', async (req, res) => {
+  try {
+    console.log('Creating test users for development purposes');
+    
+    // Define test users for each role
+    const testUsers = [
+      {
+        name: 'Test Patient',
+        email: 'test@patient.com',
+        password: 'password123',
+        role: 'patient',
+        medicalConditions: ['Diabetes Type 2', 'Hypertension'],
+        primaryConcerns: 'Managing medications and doctor appointments',
+        insuranceProvider: 'Blue Cross Blue Shield'
+      },
+      {
+        name: 'Test Advocate',
+        email: 'test@advocate.com',
+        password: 'password123',
+        role: 'advocate',
+        specializations: ['Insurance Navigation', 'Patient Rights'],
+        yearsOfExperience: '5',
+        languages: ['English', 'Spanish'],
+        bio: 'Experienced healthcare advocate specializing in patient rights and insurance navigation.'
+      },
+      {
+        name: 'Dr. Test Provider',
+        email: 'test@provider.com',
+        password: 'password123',
+        role: 'provider',
+        organization: 'Community Health Center',
+        title: 'Family Physician',
+        licensure: 'MD',
+        specializations: ['Family Medicine', 'Preventive Care']
+      }
+    ];
+    
+    const createdUsers = [];
+    const errors = [];
+    
+    // Find or create each test user
+    for (const userData of testUsers) {
+      try {
+        // Check if user already exists
+        const existingUser = await User.findOne({ email: userData.email });
+        
+        if (existingUser) {
+          createdUsers.push({
+            email: existingUser.email,
+            role: existingUser.role,
+            status: 'already exists'
+          });
+          continue;
+        }
+        
+        // Create new user
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
+        const newUser = new User({
+          ...userData,
+          password: hashedPassword
+        });
+        
+        await newUser.save();
+        
+        createdUsers.push({
+          email: newUser.email,
+          role: newUser.role,
+          status: 'created'
+        });
+      } catch (userError) {
+        errors.push({
+          email: userData.email,
+          error: userError.message
+        });
+      }
+    }
+    
+    res.json({
+      success: true,
+      message: 'Test user setup complete',
+      users: createdUsers,
+      errors: errors.length > 0 ? errors : undefined
+    });
+  } catch (error) {
+    console.error('Failed to create test users:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message,
+      message: 'Failed to create test users' 
+    });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({

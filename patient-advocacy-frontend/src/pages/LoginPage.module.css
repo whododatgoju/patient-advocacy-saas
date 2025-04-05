@@ -367,6 +367,114 @@
   margin-bottom: 1rem;
 }
 
+/* Test User Section Styles */
+.testUserSection {
+  margin-top: var(--spacing-6);
+  padding: var(--spacing-4);
+  background-color: var(--neutral-50);
+  border: 1px dashed var(--neutral-300);
+  border-radius: var(--border-radius-lg);
+}
+
+.testUserSection h3 {
+  font-size: var(--font-size-lg);
+  color: var(--primary-700);
+  margin-bottom: var(--spacing-2);
+  text-align: center;
+}
+
+.testUserInfo {
+  font-size: var(--font-size-sm);
+  color: var(--neutral-600);
+  text-align: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.testUserButtons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-4);
+}
+
+.testUserButton {
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--border-radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  color: white;
+}
+
+.testUserButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.testUserButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.patientButton {
+  background-color: var(--primary-600);
+}
+
+.patientButton:hover {
+  background-color: var(--primary-700);
+}
+
+.advocateButton {
+  background-color: var(--secondary-600);
+}
+
+.advocateButton:hover {
+  background-color: var(--secondary-700);
+}
+
+.providerButton {
+  background-color: var(--success);
+}
+
+.providerButton:hover {
+  background-color: var(--success-dark, #0e7842);
+}
+
+.testCredentials {
+  background-color: white;
+  padding: var(--spacing-3);
+  border-radius: var(--border-radius-md);
+  border-left: 3px solid var(--primary-500);
+}
+
+.testCredentials p {
+  margin-bottom: var(--spacing-2);
+  color: var(--neutral-800);
+}
+
+.testCredentials ul {
+  padding-left: var(--spacing-5);
+  margin: 0;
+}
+
+.testCredentials li {
+  font-size: var(--font-size-sm);
+  color: var(--neutral-700);
+  margin-bottom: var(--spacing-1);
+}
+
+@media (max-width: 768px) {
+  .testUserButtons {
+    flex-direction: column;
+  }
+}
+
 /* Illustration side */
 .illustration {
   background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);

@@ -1,38 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styles from './LoginPage.module.css';
-import { FiUser, FiLock, FiMail, FiArrowRight } from 'react-icons/fi';
+import { FiMail, FiLock, FiUser, FiArrowRight } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
+
+// Toggle this flag to show test user buttons
+const SHOW_TEST_USERS = true;
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, isAuthenticated, error: authError, clearError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'patient' | 'advocate' | 'provider'>('patient');
   const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Get the redirect path from location state or default to dashboard
+  const from = location.state?.from?.pathname || '/dashboard';
 
-  // Redirect if already logged in
   useEffect(() => {
+    // If already authenticated, redirect
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate(from, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
-
-  // Set error from auth context
-  useEffect(() => {
+    
+    // Update local error state when auth error changes
     if (authError) {
       setError(authError);
+      setIsLoading(false);
     }
-  }, [authError]);
+  }, [isAuthenticated, navigate, authError, from]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     clearError();
-    setError('');
     
+    // Validate input
     if (!email || !password) {
       setError('Please enter both email and password');
       return;
@@ -41,10 +48,33 @@ const LoginPage: React.FC = () => {
     try {
       setIsLoading(true);
       await login({ email, password });
-      // The redirect will happen automatically via the first useEffect
+      // Successfully logged in, redirect will happen in useEffect
     } catch (err) {
+      // Error handling is done via the authError state from context
       setIsLoading(false);
-      // Error is set via the second useEffect from auth context
+    }
+  };
+
+  const loginAsTestUser = async (userType: 'patient' | 'advocate' | 'provider') => {
+    setError(null);
+    clearError();
+    setIsLoading(true);
+    
+    // Test user credentials
+    const testCredentials = {
+      patient: { email: 'test@patient.com', password: 'password123' },
+      advocate: { email: 'test@advocate.com', password: 'password123' },
+      provider: { email: 'test@provider.com', password: 'password123' }
+    };
+    
+    try {
+      // Use the login function from AuthContext
+      await login(testCredentials[userType]);
+      // Redirect will happen in useEffect
+    } catch (err) {
+      // In case of error during login
+      setError(`Failed to log in as test ${userType}. Try again or use normal login.`);
+      setIsLoading(false);
     }
   };
 
@@ -97,7 +127,7 @@ const LoginPage: React.FC = () => {
           </button>
         </div>
 
-        <form className={styles.loginForm} onSubmit={handleLogin}>
+        <form className={styles.loginForm} onSubmit={handleSubmit}>
           {error && <div className={styles.errorMessage}>{error}</div>}
           
           <div className={styles.formGroup}>
@@ -157,6 +187,45 @@ const LoginPage: React.FC = () => {
           </button>
         </form>
 
+        {SHOW_TEST_USERS && (
+          <div className={styles.testUserSection}>
+            <h3>Quick Access Test Accounts</h3>
+            <p className={styles.testUserInfo}>
+              For demo purposes only. No real login required.
+            </p>
+            <div className={styles.testUserButtons}>
+              <button 
+                className={`${styles.testUserButton} ${styles.patientButton}`}
+                onClick={() => loginAsTestUser('patient')}
+                disabled={isLoading}
+              >
+                Login as Test Patient
+              </button>
+              <button 
+                className={`${styles.testUserButton} ${styles.advocateButton}`}
+                onClick={() => loginAsTestUser('advocate')}
+                disabled={isLoading}
+              >
+                Login as Test Advocate
+              </button>
+              <button 
+                className={`${styles.testUserButton} ${styles.providerButton}`}
+                onClick={() => loginAsTestUser('provider')}
+                disabled={isLoading}
+              >
+                Login as Test Provider
+              </button>
+            </div>
+            <div className={styles.testCredentials}>
+              <p><strong>Test Credentials:</strong></p>
+              <ul>
+                <li>Email: test@[role].com (e.g., test@patient.com)</li>
+                <li>Password: password123</li>
+              </ul>
+            </div>
+          </div>
+        )}
+        
         <div className={styles.divider}>
           <span>Don't have an account?</span>
         </div>

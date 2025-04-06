@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from '../common/Button';
 import styles from './MainLayout.module.css';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { FiMenu, FiX, FiLogOut } from 'react-icons/fi';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   
   // Close mobile menu when route changes
   useEffect(() => {
@@ -44,6 +47,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     patient: 'Patient',
     advocate: 'Advocate',
     provider: 'Provider',
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
   return (
@@ -81,6 +89,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                   My Profile
                 </Button>
               </Link>
+
+              <Button
+                variant="tertiary"
+                size="sm"
+                onClick={handleLogout}
+                className={styles.logoutButton}
+              >
+                <FiLogOut className={styles.logoutIcon} />
+                Logout
+              </Button>
             </div>
             
             {/* Mobile Menu Button */}
@@ -141,6 +159,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             >
               My Profile
             </Link>
+            <button 
+              onClick={handleLogout}
+              className={styles.mobileLogoutButton}
+            >
+              <FiLogOut className={styles.mobileLogoutIcon} />
+              Logout
+            </button>
           </nav>
           
           <div className={styles.mobileNavFooter}>

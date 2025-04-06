@@ -100,6 +100,18 @@
 .profileSection {
   display: flex;
   align-items: center;
+  gap: var(--spacing-3);
+}
+
+.logoutButton {
+  margin-left: var(--spacing-2);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.logoutIcon {
+  font-size: var(--font-size-lg);
 }
 
 .roleLabel {
@@ -171,6 +183,33 @@
   color: var(--primary-600);
   padding-left: var(--spacing-2);
   text-decoration: none;
+}
+
+.mobileLogoutButton {
+  color: var(--danger);
+  font-weight: 500;
+  text-decoration: none;
+  padding: var(--spacing-4) 0;
+  border-bottom: 1px solid var(--neutral-100);
+  transition: all var(--transition-normal);
+  font-size: var(--font-size-lg);
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.mobileLogoutButton:hover {
+  color: var(--danger-600);
+  padding-left: var(--spacing-2);
+}
+
+.mobileLogoutIcon {
+  font-size: var(--font-size-xl);
 }
 
 .activeMobileNavLink {

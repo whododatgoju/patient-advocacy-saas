@@ -16,32 +16,35 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
-let cachedDb = null;
+// Import required packages
+const bodyParser = require('body-parser');
+
+// Initialize MongoDB connection using the recommended pattern for serverless
+const mongoClient = mongoose.connection;
+let isConnected = false;
+
+// Connect to MongoDB - this pattern is optimized for serverless functions
 const connectToDatabase = async () => {
-  if (cachedDb) {
-    return cachedDb;
+  if (isConnected) {
+    console.log('Using existing database connection');
+    return;
   }
-  
-  const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://dcampos2014:YOUR_ACTUAL_PASSWORD@cluster0.7gp1tzu.mongodb.net/patient_advocacy?retryWrites=true&writeConcern=majority';
-  
+
+  console.log('Creating new database connection');
   try {
-    // Connect to MongoDB Atlas (required for serverless)
-    const client = await mongoose.connect(mongoUri, {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dcampos2014:YOUR_ACTUAL_PASSWORD@cluster0.7gp1tzu.mongodb.net/patient_advocacy?retryWrites=true&writeConcern=majority', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    
-    cachedDb = client;
-    console.log('Connected to MongoDB Atlas');
-    return cachedDb;
+    isConnected = true;
+    console.log('Database connected successfully');
   } catch (error) {
-    console.error('MongoDB connection error:', error);
+    console.error('Database connection error:', error);
     throw error;
   }
 };
 
-// User Schema/Model (simplified for serverless function)
+// Define MongoDB schemas
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -139,97 +142,116 @@ const protect = async (req, res, next) => {
   }
 };
 
-// ==================== API Routes ====================
+// Ensure DB connection before request handling
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (error) {
+    console.error('Database connection middleware error:', error);
+    res.status(500).json({ success: false, message: 'Database connection failed' });
+  }
+});
 
 // AUTH ROUTES
 // Signup
 app.post('/api/auth/signup', async (req, res) => {
   try {
-    await connectToDatabase();
+    const { name, email, password, role, ...additionalData } = req.body;
     
-    const newUser = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      role: req.body.role || 'patient',
-      profilePicture: req.body.profilePicture,
-      specialty: req.body.specialty,
-      certifications: req.body.certifications,
-      experiences: req.body.experiences,
-      availability: req.body.availability,
-      bio: req.body.bio
-    });
+    // Validate request
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
     
-    // Remove password from output
-    newUser.password = undefined;
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'User already exists' });
+    }
     
-    // Create JWT
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Create user based on role with additional data
+    const userData = {
+      name,
+      email,
+      password: hashedPassword,
+      role,
+      ...additionalData
+    };
+    
+    const newUser = new User(userData);
+    await newUser.save();
+    
+    // Generate JWT token
     const token = jwt.sign(
-      { id: newUser._id },
-      process.env.JWT_SECRET || 'your-temp-secret-key',
+      { userId: newUser._id, email: newUser.email, role: newUser.role },
+      process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
     
     res.status(201).json({
-      status: 'success',
+      success: true,
       token,
-      data: { user: newUser }
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role
+      }
     });
+    
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(400).json({
-      status: 'fail',
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: 'Error creating user', error: error.message });
   }
 });
 
 // Login
 app.post('/api/auth/login', async (req, res) => {
   try {
-    await connectToDatabase();
-    
     const { email, password } = req.body;
     
-    // Check if email and password exist
+    // Validate request
     if (!email || !password) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'Please provide email and password'
-      });
+      return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
     
-    // Check if user exists & password is correct
-    const user = await User.findOne({ email }).select('+password');
-    
-    if (!user || !(await user.correctPassword(password, user.password))) {
-      return res.status(401).json({
-        status: 'fail',
-        message: 'Incorrect email or password'
-      });
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
     
-    // Create JWT
+    // Compare passwords
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+    
+    // Generate JWT token
     const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET || 'your-temp-secret-key',
+      { userId: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
     
-    // Remove password from output
-    user.password = undefined;
-    
-    res.status(200).json({
-      status: 'success',
+    res.json({
+      success: true,
       token,
-      data: { user }
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
+    
   } catch (error) {
     console.error('Login error:', error);
-    res.status(400).json({
-      status: 'fail',
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: 'Error during login', error: error.message });
   }
 });
 
@@ -252,8 +274,6 @@ app.get('/api/users/me', protect, async (req, res) => {
 // Get all providers
 app.get('/api/users/providers', async (req, res) => {
   try {
-    await connectToDatabase();
-    
     const providers = await User.find({ role: 'provider' })
       .select('name email profilePicture specialty certifications availability');
     
@@ -273,8 +293,6 @@ app.get('/api/users/providers', async (req, res) => {
 // Get all advocates
 app.get('/api/users/advocates', async (req, res) => {
   try {
-    await connectToDatabase();
-    
     const advocates = await User.find({ role: 'advocate' })
       .select('name email profilePicture specialty certifications experiences availability bio');
     
@@ -295,8 +313,6 @@ app.get('/api/users/advocates', async (req, res) => {
 // Create a video call
 app.post('/api/video-calls', protect, async (req, res) => {
   try {
-    await connectToDatabase();
-    
     const {
       title,
       scheduledStartTime,
@@ -353,8 +369,6 @@ app.post('/api/video-calls', protect, async (req, res) => {
 // Get user's video calls
 app.get('/api/video-calls/my-calls', protect, async (req, res) => {
   try {
-    await connectToDatabase();
-    
     const { status, startDate, endDate } = req.query;
     
     // Build query
@@ -403,8 +417,6 @@ app.get('/api/video-calls/my-calls', protect, async (req, res) => {
 // Get single video call
 app.get('/api/video-calls/:id', protect, async (req, res) => {
   try {
-    await connectToDatabase();
-    
     const videoCall = await VideoCall.findById(req.params.id)
       .populate({
         path: 'participants.user',
@@ -449,8 +461,6 @@ app.get('/api/video-calls/:id', protect, async (req, res) => {
 // Update video call status
 app.patch('/api/video-calls/:id/status', protect, async (req, res) => {
   try {
-    await connectToDatabase();
-    
     const { status } = req.body;
     
     if (!status || !['scheduled', 'in-progress', 'completed', 'canceled'].includes(status)) {
@@ -489,8 +499,6 @@ app.patch('/api/video-calls/:id/status', protect, async (req, res) => {
 // Match with advocates
 app.post('/api/advocates/match', async (req, res) => {
   try {
-    await connectToDatabase();
-    
     const {
       conditions = [],
       specialtyNeeded,
@@ -610,7 +618,7 @@ app.get('/create-test-users', async (req, res) => {
           continue;
         }
         
-        // Create new user
+        // Create new user with hashed password
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         const newUser = new User({
           ...userData,

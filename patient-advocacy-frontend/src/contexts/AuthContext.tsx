@@ -6,8 +6,9 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import AuthService, { UserData, LoginCredentials, SignupData } from '../services/AuthService';
 
-// Toggle this flag to enable the test user functionality
-const USE_TEST_USER = true;
+// We'll keep this for backward compatibility but our primary method 
+// will now be using the AuthService implementation
+const USE_TEST_USER = false;
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -74,20 +75,19 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   useEffect(() => {
     const initAuth = () => {
       try {
-        if (USE_TEST_USER) {
-          // For testing purposes - use the test user
-          // This loads the test patient by default
+        // Try to get user data from localStorage (handled by AuthService)
+        const userData = AuthService.getCurrentUser();
+        
+        if (userData) {
+          setUser(userData.data.user);
+        } else if (USE_TEST_USER) {
+          // This is for backward compatibility
+          // The test patient by default
           const testUser = TEST_USERS.patient as UserData;
           setUser(testUser);
           localStorage.setItem('authToken', 'mock-token-123');
           localStorage.setItem('userData', JSON.stringify({ data: { user: testUser } }));
-          console.info('🔑 Using test user account. To disable, set USE_TEST_USER to false in AuthContext.tsx');
-        } else {
-          // Normal authentication flow
-          const userData = AuthService.getCurrentUser();
-          if (userData) {
-            setUser(userData.data.user);
-          }
+          console.info('🔑 Using test user account (legacy mode). To disable, set USE_TEST_USER to false in AuthContext.tsx');
         }
       } catch (err) {
         console.error('Failed to initialize authentication', err);

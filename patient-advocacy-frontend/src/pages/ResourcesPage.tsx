@@ -121,6 +121,13 @@ const ResourcesPage: React.FC = () => {
       description: "Access to FDA guides for commonly prescribed medications and their safety profiles.",
       category: "medications",
       image: "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      id: 13,
+      title: "Adverse Medication Reactions & Medical Malpractice Guide",
+      description: "Essential steps to take if you experience an adverse medication reaction and guidelines for addressing potential medical malpractice.",
+      category: "medications",
+      image: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
     }
   ];
   

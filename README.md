@@ -29,6 +29,19 @@ The platform is deployed at: [https://peaceful-sfogliatella-0b0dbf.netlify.app](
 - Self-advocacy tools and techniques
 - Medication safety information
 
+### 👤 Role-Specific User Profiles
+- Patient profiles with medical conditions and health goals management
+- Advocate profiles with specializations and languages tracking
+- Provider profiles with professional information and licensure details
+- Editable fields for all profile information
+- Role-based dashboard customization
+
+### 📋 Health Journey Timeline
+- Interactive timeline of health events
+- Tracking of appointments, treatments, and milestones
+- Notes and documentation capabilities
+- Visual representation of patient's health journey
+
 ## Technology Stack
 - **Frontend**: React (with Vite), TypeScript, CSS Modules
 - **Backend**: Serverless functions (via Netlify Functions)
@@ -85,19 +98,41 @@ patient-advocacy-frontend/
 │   └── functions/       # Serverless API functions
 ├── public/              # Static assets
 ├── src/
+│   ├── assets/          # Images and other static resources
+│   │   └── images/      # Image assets for the application
 │   ├── components/      # Reusable UI components
 │   │   ├── advocate/    # Advocate matching components
-│   │   ├── common/      # Shared UI elements
-│   │   ├── layout/      # Layout components
+│   │   ├── common/      # Shared UI elements (buttons, inputs, notifications)
+│   │   ├── journal/     # Health journaling components
+│   │   ├── layout/      # Layout components (header, footer, sidebar)
+│   │   ├── timeline/    # Health journey timeline components
 │   │   └── video/       # Video call components
+│   ├── contexts/        # React context providers
+│   │   └── AuthContext.tsx  # Authentication context
+│   ├── data/            # Mock data and constants
 │   ├── pages/           # Main application pages
-│   ├── utils/           # Utility functions and API
-│   └── types/           # TypeScript type definitions
+│   │   ├── AdvocateSearchPage.tsx  # Advocate discovery page
+│   │   ├── DashboardPage.tsx       # User dashboard
+│   │   ├── LoginPage.tsx           # Authentication page
+│   │   ├── ProfilePage.tsx         # User profile management
+│   │   ├── ResourcesPage.tsx       # Healthcare resources
+│   │   └── VideoCallPage.tsx       # Video consultation interface
+│   ├── services/        # API and service integrations
+│   │   ├── AuthService.ts          # Authentication API
+│   │   └── UserService.ts          # User profile management API
+│   ├── styles/          # Global styles and variables
+│   ├── types/           # TypeScript type definitions
+│   └── utils/           # Utility functions and helpers
 └── development/         # Documentation and planning
     ├── architecture/    # System architecture diagrams
     ├── design/          # Design system and UI specifications
     └── research/        # Market research and user needs
 ```
+
+## Testing & Development Features
+- Test account system with role-specific demo users (patient, advocate, provider)
+- MongoDB database with efficient indexing for user queries
+- JWT-based authentication with secure token management
 
 ## Environment Variables
 - `MONGODB_URI`: MongoDB connection string

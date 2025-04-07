@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from '../common/Button';
+import ThemeToggle from '../common/ThemeToggle';
 import styles from './MainLayout.module.css';
 import { FiMenu, FiX, FiLogOut } from 'react-icons/fi';
 import { useAuth } from '../../contexts/AuthContext';
@@ -77,6 +78,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             </nav>
             
             <div className={styles.profileSection}>
+              <ThemeToggle />
+              
               <div className={styles.roleLabel} style={{ backgroundColor: `var(--color-${role})` }}>
                 {roleLabel[role]}
               </div>
@@ -172,6 +175,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             <div className={styles.mobileRoleLabel} style={{ backgroundColor: `var(--color-${role})` }}>
               {roleLabel[role]}
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </div>

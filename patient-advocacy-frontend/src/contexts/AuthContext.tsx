@@ -16,6 +16,7 @@ interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<void>;
   signup: (userData: SignupData) => Promise<void>;
   logout: () => void;
+  updateUser: (updatedUserData: UserData) => void;
   error: string | null;
   clearError: () => void;
 }
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   signup: async () => {},
   logout: () => {},
+  updateUser: () => {},
   error: null,
   clearError: () => {},
 });
@@ -142,6 +144,25 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     setUser(null);
   };
 
+  const updateUser = (updatedUserData: UserData) => {
+    setUser(updatedUserData);
+    
+    // Update localStorage if not using test user
+    if (!USE_TEST_USER) {
+      const currentUserData = AuthService.getCurrentUser();
+      if (currentUserData) {
+        const updatedStorage = {
+          ...currentUserData,
+          data: {
+            ...currentUserData.data,
+            user: updatedUserData
+          }
+        };
+        localStorage.setItem('user', JSON.stringify(updatedStorage));
+      }
+    }
+  };
+
   const clearError = () => {
     setError(null);
   };
@@ -153,6 +174,7 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     login,
     signup,
     logout,
+    updateUser,
     error,
     clearError,
   };

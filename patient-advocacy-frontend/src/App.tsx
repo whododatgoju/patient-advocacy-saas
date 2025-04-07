@@ -2,11 +2,14 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { lazy, Suspense } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AccessibilityProvider } from './contexts/AccessibilityContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import AccessibilityPanel from './components/common/AccessibilityPanel'
 import KeyboardShortcutsGuide from './components/common/KeyboardShortcutsGuide'
 import InstallPWAPrompt from './components/common/InstallPWAPrompt'
 import './styles/accessibility.css'
 import './styles/performance.css'
+import './styles/designTokens.css'
+import './styles/globalTheme.css'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isRunningStandalone } from './pwaUtils'
@@ -131,63 +134,65 @@ function App() {
   return (
     <AuthProvider>
       <AccessibilityProvider>
-        <Router>
-          <div id="main-content">
-            <KeyboardNavigation />
-            <AccessibilityPanel />
-            <KeyboardShortcutsGuide />
-            {showInstallPrompt && <InstallPWAPrompt />}
-            <Suspense fallback={<LoadingSpinner />}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                
-                {/* Protected Routes */}
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <DashboardPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/journal" element={
-                  <ProtectedRoute>
-                    <JournalPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <ProfilePage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/resources" element={
-                  <ProtectedRoute>
-                    <ResourcesPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/resources/:id" element={
-                  <ProtectedRoute>
-                    <ResourceDetailsPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/advocate-match" element={
-                  <ProtectedRoute>
-                    <AdvocateMatchPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/video-call/:callId" element={
-                  <ProtectedRoute>
-                    <VideoCallPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/schedule-call" element={
-                  <ProtectedRoute>
-                    <ScheduleCallPage />
-                  </ProtectedRoute>
-                } />
-              </Routes>
-            </Suspense>
-          </div>
-        </Router>
+        <ThemeProvider>
+          <Router>
+            <div id="main-content">
+              <KeyboardNavigation />
+              <AccessibilityPanel />
+              <KeyboardShortcutsGuide />
+              {showInstallPrompt && <InstallPWAPrompt />}
+              <Suspense fallback={<LoadingSpinner />}>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
+                  
+                  {/* Protected Routes */}
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <DashboardPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/journal" element={
+                    <ProtectedRoute>
+                      <JournalPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <ProfilePage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/resources" element={
+                    <ProtectedRoute>
+                      <ResourcesPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/resources/:id" element={
+                    <ProtectedRoute>
+                      <ResourceDetailsPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/advocate-match" element={
+                    <ProtectedRoute>
+                      <AdvocateMatchPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/video-call/:callId" element={
+                    <ProtectedRoute>
+                      <VideoCallPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/schedule-call" element={
+                    <ProtectedRoute>
+                      <ScheduleCallPage />
+                    </ProtectedRoute>
+                  } />
+                </Routes>
+              </Suspense>
+            </div>
+          </Router>
+        </ThemeProvider>
       </AccessibilityProvider>
     </AuthProvider>
   )

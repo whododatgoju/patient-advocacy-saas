@@ -271,6 +271,134 @@ app.get('/api/users/me', protect, async (req, res) => {
   }
 });
 
+// Update user profile
+app.patch('/api/users/profile', protect, async (req, res) => {
+  try {
+    const allowedFields = [
+      'name', 'email', 'bio', 'location', 'phone', 'profilePicture',
+      'specialty', 'certifications', 'experiences', 'availability'
+    ];
+    
+    // Filter out fields that are not allowed to be updated
+    const filteredBody = {};
+    Object.keys(req.body).forEach(field => {
+      if (allowedFields.includes(field)) {
+        filteredBody[field] = req.body[field];
+      }
+    });
+    
+    // If email is being updated, check if it's already in use
+    if (filteredBody.email && filteredBody.email !== req.user.email) {
+      const existingUser = await User.findOne({ email: filteredBody.email });
+      if (existingUser) {
+        return res.status(400).json({
+          status: 'fail',
+          message: 'Email already in use'
+        });
+      }
+    }
+    
+    // Update user
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
+      new: true,
+      runValidators: true
+    });
+    
+    res.status(200).json({
+      status: 'success',
+      data: { user: updatedUser }
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      message: error.message
+    });
+  }
+});
+
+// Update user password
+app.patch('/api/users/password', protect, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    
+    // Check if all fields are provided
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Please provide all password fields'
+      });
+    }
+    
+    // Check if new password and confirm password match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'New password and confirm password do not match'
+      });
+    }
+    
+    // Get user with password
+    const user = await User.findById(req.user._id).select('+password');
+    
+    // Check if current password is correct
+    const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Current password is incorrect'
+      });
+    }
+    
+    // Update password
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    
+    res.status(200).json({
+      status: 'success',
+      message: 'Password updated successfully'
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      message: error.message
+    });
+  }
+});
+
+// Upload profile picture
+app.post('/api/users/profile-picture', protect, async (req, res) => {
+  try {
+    // Note: In a production environment, you would handle file uploads
+    // with a service like Cloudinary, AWS S3, or similar.
+    // For this implementation, we'll just accept a URL for the profile picture
+    const { profilePictureUrl } = req.body;
+    
+    if (!profilePictureUrl) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Please provide a profile picture URL'
+      });
+    }
+    
+    // Update user with new profile picture URL
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id, 
+      { profilePicture: profilePictureUrl },
+      { new: true }
+    );
+    
+    res.status(200).json({
+      status: 'success',
+      data: { user: updatedUser }
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      message: error.message
+    });
+  }
+});
+
 // Get all providers
 app.get('/api/users/providers', async (req, res) => {
   try {

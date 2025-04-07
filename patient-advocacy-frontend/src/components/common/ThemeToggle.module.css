@@ -1,0 +1,32 @@
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.themeToggle:hover {
+  background-color: var(--background-secondary);
+  border-color: var(--border-color-hover);
+}
+
+.icon {
+  font-size: 1.2rem;
+}
+
+/* Dark mode specific styles */
+[data-theme="dark"] .themeToggle {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .themeToggle:hover {
+  background-color: var(--background-tertiary);
+}

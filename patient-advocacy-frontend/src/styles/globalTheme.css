@@ -1,0 +1,154 @@
+/* Global Theme Styles */
+body {
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Card and container elements */
+.card, 
+.container-card,
+.paper {
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  box-shadow: var(--card-shadow);
+}
+
+/* Forms and inputs */
+input, 
+textarea, 
+select {
+  background-color: var(--input-background);
+  color: var(--input-text);
+  border-color: var(--input-border);
+}
+
+input::placeholder, 
+textarea::placeholder {
+  color: var(--input-placeholder);
+}
+
+input:focus, 
+textarea:focus, 
+select:focus {
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 2px rgba(0, 135, 255, 0.2);
+}
+
+/* Buttons */
+button.btn-primary,
+.btn-primary {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}
+
+button.btn-primary:hover,
+.btn-primary:hover {
+  background-color: var(--button-primary-hover);
+}
+
+button.btn-secondary,
+.btn-secondary {
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+}
+
+button.btn-secondary:hover,
+.btn-secondary:hover {
+  background-color: var(--button-secondary-hover);
+}
+
+/* Text colors */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
+p, span, div {
+  color: var(--text-primary);
+}
+
+a {
+  color: var(--primary-500);
+}
+
+a:hover {
+  color: var(--primary-600);
+}
+
+/* Tables */
+table {
+  border-color: var(--border-color);
+}
+
+thead {
+  background-color: var(--background-secondary);
+}
+
+tbody tr:hover {
+  background-color: var(--background-secondary);
+}
+
+/* Modals and overlays */
+.modal-overlay {
+  background-color: var(--modal-overlay);
+}
+
+.modal-content {
+  background-color: var(--modal-background);
+  border: 1px solid var(--border-color);
+}
+
+/* Code blocks and pre elements */
+pre, code {
+  background-color: var(--background-tertiary);
+  color: var(--text-secondary);
+}
+
+/* Dropdowns */
+.dropdown-menu {
+  background-color: var(--dropdown-background);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+.dropdown-item:hover {
+  background-color: var(--dropdown-hover);
+}
+
+.dropdown-divider {
+  border-top: 1px solid var(--dropdown-divider);
+}
+
+/* Notifications */
+.notification-info {
+  background-color: var(--notification-info-bg);
+}
+
+.notification-success {
+  background-color: var(--notification-success-bg);
+}
+
+.notification-warning {
+  background-color: var(--notification-warning-bg);
+}
+
+.notification-error {
+  background-color: var(--notification-error-bg);
+}
+
+/* Specific role-based colors from the existing app */
+[data-theme="dark"] .color-patient,
+[data-theme="dark"] .logo-patient {
+  color: var(--primary-400);
+}
+
+[data-theme="dark"] .color-advocate,
+[data-theme="dark"] .logo-advocate {
+  color: var(--secondary-400);
+}
+
+[data-theme="dark"] .color-provider,
+[data-theme="dark"] .logo-provider {
+  color: #2ecc71; /* Adjusted for better visibility in dark mode */
+}

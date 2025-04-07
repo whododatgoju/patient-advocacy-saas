@@ -92,4 +92,114 @@
   --z-50: 50;
   --z-modal: 100;
   --z-tooltip: 200;
+
+  /* Theme Colors - Light Mode (Default) */
+  --background-primary: var(--neutral-50);
+  --background-secondary: var(--neutral-100);
+  --background-tertiary: var(--neutral-200);
+  
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-700);
+  --text-tertiary: var(--neutral-500);
+  --text-inverted: var(--neutral-50);
+  
+  --border-color: var(--neutral-200);
+  --border-color-hover: var(--neutral-300);
+  
+  --card-background: white;
+  --card-shadow: var(--shadow-md);
+  
+  --button-primary-bg: var(--primary-500);
+  --button-primary-text: white;
+  --button-primary-hover: var(--primary-600);
+  
+  --button-secondary-bg: var(--secondary-500);
+  --button-secondary-text: white;
+  --button-secondary-hover: var(--secondary-600);
+  
+  --input-background: white;
+  --input-border: var(--neutral-300);
+  --input-focus-border: var(--primary-500);
+  --input-text: var(--neutral-900);
+  --input-placeholder: var(--neutral-400);
+  
+  --navbar-background: white;
+  --navbar-border: var(--neutral-200);
+  --navbar-text: var(--neutral-800);
+  --navbar-active: var(--primary-500);
+  
+  --sidebar-background: white;
+  --sidebar-active-bg: var(--primary-50);
+  --sidebar-hover-bg: var(--neutral-100);
+  
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+  --modal-background: white;
+  
+  --dropdown-background: white;
+  --dropdown-hover: var(--neutral-100);
+  --dropdown-divider: var(--neutral-200);
+  
+  --notification-info-bg: var(--primary-50);
+  --notification-success-bg: #ecfdf5;
+  --notification-warning-bg: #fffbeb;
+  --notification-error-bg: #fef2f2;
+  
+  --toggle-bg-off: var(--neutral-300);
+  --toggle-bg-on: var(--primary-500);
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  --background-primary: var(--neutral-900);
+  --background-secondary: var(--neutral-800);
+  --background-tertiary: var(--neutral-700);
+  
+  --text-primary: var(--neutral-50);
+  --text-secondary: var(--neutral-200);
+  --text-tertiary: var(--neutral-400);
+  --text-inverted: var(--neutral-900);
+  
+  --border-color: var(--neutral-700);
+  --border-color-hover: var(--neutral-600);
+  
+  --card-background: var(--neutral-800);
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  
+  --button-primary-bg: var(--primary-600);
+  --button-primary-text: white;
+  --button-primary-hover: var(--primary-500);
+  
+  --button-secondary-bg: var(--secondary-600);
+  --button-secondary-text: white;
+  --button-secondary-hover: var(--secondary-500);
+  
+  --input-background: var(--neutral-800);
+  --input-border: var(--neutral-600);
+  --input-focus-border: var(--primary-500);
+  --input-text: var(--neutral-100);
+  --input-placeholder: var(--neutral-500);
+  
+  --navbar-background: var(--neutral-900);
+  --navbar-border: var(--neutral-700);
+  --navbar-text: var(--neutral-100);
+  --navbar-active: var(--primary-400);
+  
+  --sidebar-background: var(--neutral-900);
+  --sidebar-active-bg: var(--neutral-700);
+  --sidebar-hover-bg: var(--neutral-800);
+  
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+  --modal-background: var(--neutral-800);
+  
+  --dropdown-background: var(--neutral-800);
+  --dropdown-hover: var(--neutral-700);
+  --dropdown-divider: var(--neutral-700);
+  
+  --notification-info-bg: rgba(59, 130, 246, 0.1);
+  --notification-success-bg: rgba(16, 185, 129, 0.1);
+  --notification-warning-bg: rgba(245, 158, 11, 0.1);
+  --notification-error-bg: rgba(239, 68, 68, 0.1);
+  
+  --toggle-bg-off: var(--neutral-600);
+  --toggle-bg-on: var(--primary-500);
 }

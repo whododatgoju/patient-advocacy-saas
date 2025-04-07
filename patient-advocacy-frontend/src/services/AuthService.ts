@@ -15,6 +15,25 @@ export interface UserData {
   role: 'patient' | 'advocate' | 'provider' | 'admin';
   profilePicture?: string;
   specialty?: string;
+  bio?: string;
+  location?: string;
+  phone?: string;
+  
+  // Patient-specific fields
+  medicalConditions?: string[];
+  healthGoals?: string[];
+  insuranceProvider?: string;
+  
+  // Advocate-specific fields
+  specializations?: string[];
+  yearsOfExperience?: number;
+  languages?: string[];
+  
+  // Provider-specific fields
+  organization?: string;
+  title?: string;
+  licensure?: string;
+  
   certifications?: string[];
   experiences?: {
     title: string;
@@ -28,7 +47,6 @@ export interface UserData {
     startTime: string;
     endTime: string;
   }[];
-  bio?: string;
   createdAt: Date;
 }
 

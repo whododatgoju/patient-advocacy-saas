@@ -11,9 +11,11 @@ interface NotificationPreferences {
 
 interface NotificationManagerProps {
   onClose?: () => void;
+  message?: string;
+  type?: 'success' | 'error' | 'info';
 }
 
-const NotificationManager: React.FC<NotificationManagerProps> = ({ onClose }) => {
+const NotificationManager: React.FC<NotificationManagerProps> = ({ onClose, message, type }) => {
   const [permissionStatus, setPermissionStatus] = useState<string>('default');
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     appointments: true,
@@ -22,6 +24,7 @@ const NotificationManager: React.FC<NotificationManagerProps> = ({ onClose }) =>
     healthTips: false
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(!!message);
 
   useEffect(() => {
     // Check the current notification permission status
@@ -35,6 +38,20 @@ const NotificationManager: React.FC<NotificationManagerProps> = ({ onClose }) =>
       setPreferences(JSON.parse(savedPreferences));
     }
   }, []);
+
+  useEffect(() => {
+    setVisible(!!message);
+    
+    // Auto-dismiss toast notifications after 5 seconds
+    if (message) {
+      const timer = setTimeout(() => {
+        setVisible(false);
+        if (onClose) onClose();
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [message, onClose]);
 
   const handleRequestPermission = async () => {
     setIsLoading(true);
@@ -116,6 +133,27 @@ const NotificationManager: React.FC<NotificationManagerProps> = ({ onClose }) =>
       </button>
     );
   };
+
+  // If this is being used as a toast notification
+  if (message) {
+    return (
+      <div 
+        className={`${styles.toastNotification} ${type ? styles[type] : ''} ${visible ? styles.visible : ''}`}
+      >
+        <div className={styles.toastContent}>
+          <p>{message}</p>
+        </div>
+        {onClose && (
+          <button 
+            onClick={onClose} 
+            className={styles.closeToastButton}
+          >
+            &times;
+          </button>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={styles.notificationManager}>

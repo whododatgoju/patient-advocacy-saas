@@ -42,6 +42,13 @@ The platform is deployed at: [https://peaceful-sfogliatella-0b0dbf.netlify.app](
 - Notes and documentation capabilities
 - Visual representation of patient's health journey
 
+### 🌓 Dark Mode Support
+- System preference detection for automatic theme selection
+- Manual theme toggle in the navigation bar
+- Consistent styling across all components and pages
+- Enhanced readability and reduced eye strain in low-light environments
+- Persistent theme preference via localStorage
+
 ## Technology Stack
 - **Frontend**: React (with Vite), TypeScript, CSS Modules
 - **Backend**: Serverless functions (via Netlify Functions)

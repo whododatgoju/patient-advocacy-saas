@@ -72,6 +72,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
               <Link to="/" className={`${styles.navLink} ${location.pathname === '/' ? styles.activeNavLink : ''}`}>Home</Link>
               <Link to="/dashboard" className={`${styles.navLink} ${location.pathname === '/dashboard' ? styles.activeNavLink : ''}`}>Dashboard</Link>
               <Link to="/journal" className={`${styles.navLink} ${location.pathname === '/journal' ? styles.activeNavLink : ''}`}>Health Journal</Link>
+              <Link to="/documentation" className={`${styles.navLink} ${location.pathname === '/documentation' ? styles.activeNavLink : ''}`}>Documentation</Link>
               <Link to="/schedule-call" className={`${styles.navLink} ${location.pathname === '/schedule-call' ? styles.activeNavLink : ''}`}>Video Calls</Link>
               <Link to="/resources" className={`${styles.navLink} ${location.pathname === '/resources' ? styles.activeNavLink : ''}`}>Resources</Link>
               <Link to="/advocate-match" className={`${styles.navLink} ${location.pathname === '/advocate-match' ? styles.activeNavLink : ''}`}>Find Advocate</Link>
@@ -137,6 +138,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
               className={`${styles.mobileNavLink} ${location.pathname === '/journal' ? styles.activeMobileNavLink : ''}`}
             >
               Health Journal
+            </Link>
+            <Link 
+              to="/documentation" 
+              className={`${styles.mobileNavLink} ${location.pathname === '/documentation' ? styles.activeMobileNavLink : ''}`}
+            >
+              Documentation
             </Link>
             <Link 
               to="/schedule-call" 
@@ -228,6 +235,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 <li><Link to="/" className={styles.footerLink}>Home</Link></li>
                 <li><Link to="/dashboard" className={styles.footerLink}>Dashboard</Link></li>
                 <li><Link to="/journal" className={styles.footerLink}>Health Journal</Link></li>
+                <li><Link to="/documentation" className={styles.footerLink}>Documentation</Link></li>
                 <li><Link to="/schedule-call" className={styles.footerLink}>Video Calls</Link></li>
                 <li><Link to="/resources" className={styles.footerLink}>Resources</Link></li>
                 <li><Link to="/advocate-match" className={styles.footerLink}>Find an Advocate</Link></li>

@@ -1,0 +1,189 @@
+.uploader {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 20px;
+}
+
+.uploader h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #2563eb;
+  font-size: 1.25rem;
+}
+
+.fileSelector {
+  position: relative;
+  border: 2px dashed #ccc;
+  border-radius: 6px;
+  padding: 40px;
+  text-align: center;
+  margin-bottom: 20px;
+  background-color: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fileSelector:hover {
+  background-color: #f0f3f9;
+  border-color: #93c5fd;
+}
+
+.fileInput {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.fileInfo {
+  margin-top: 10px;
+}
+
+.fileInfo ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.fileInfo li {
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #444;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.formGroup textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.formRow {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.formRow .formGroup {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkboxLabel input {
+  width: auto;
+}
+
+.tagContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e2e8f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  margin-left: 4px;
+  color: #6b7280;
+}
+
+.error {
+  color: #dc2626;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.progressContainer {
+  width: 100%;
+  height: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: #2563eb;
+  transition: width 0.3s ease;
+}
+
+.progressContainer span {
+  position: absolute;
+  right: 5px;
+  top: -5px;
+  font-size: 12px;
+  color: #333;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.uploadButton {
+  background-color: #2563eb;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.uploadButton:hover {
+  background-color: #1e40af;
+}
+
+.uploadButton:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}

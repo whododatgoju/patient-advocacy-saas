@@ -1,0 +1,473 @@
+.documentationPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.pageHeader {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.pageHeader h1 {
+  color: #1e40af;
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.pageHeader p {
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 12px 20px;
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tab:hover {
+  color: #1e40af;
+}
+
+.activeTab {
+  color: #1e40af;
+}
+
+.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #1e40af;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.primaryButton {
+  background-color: #2563eb;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover {
+  background-color: #1e40af;
+}
+
+.documentsTab, .casesTab {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Case list styling */
+.casesContainer {
+  margin-top: 20px;
+}
+
+.casesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.casesHeader h3 {
+  margin: 0;
+  color: #1e40af;
+}
+
+.emptyCases {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.emptyCases p {
+  color: #6b7280;
+  margin-bottom: 15px;
+}
+
+.casesList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.caseCard {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.caseCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: #bfdbfe;
+}
+
+.selectedCase {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.caseTitle {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.caseType {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+}
+
+.caseDate {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+}
+
+.documentCount {
+  font-size: 0.875rem;
+  color: #1e40af;
+  margin-bottom: 8px;
+}
+
+.caseStatus {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.statusactive {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.statusinactive {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.statusresolved {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.statuspending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Case detail styling */
+.caseDetail {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.caseDetailHeader {
+  margin-bottom: 20px;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #2563eb;
+  padding: 0;
+  font-size: 0.875rem;
+  cursor: pointer;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.backButton:hover {
+  text-decoration: underline;
+}
+
+.caseDetailMeta {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.caseDescription {
+  margin-bottom: 20px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.caseActions {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
+
+.caseDocuments {
+  margin-bottom: 30px;
+}
+
+.caseDocuments h3 {
+  color: #1e40af;
+  margin-bottom: 10px;
+}
+
+/* Document checklist */
+.documentChecklist {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.documentChecklist h3 {
+  color: #1e40af;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.documentChecklist p {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 15px;
+}
+
+.checklistItems {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.checklistItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checklistItem label {
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+/* Document viewer */
+.documentViewer {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.closeButton:hover {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+.documentInfo {
+  margin-bottom: 20px;
+  padding-right: 30px;
+}
+
+.documentInfo h2 {
+  margin-top: 0;
+  color: #1e40af;
+  margin-bottom: 10px;
+}
+
+.documentMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 10px;
+}
+
+.documentDescription {
+  color: #4b5563;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.documentTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 15px;
+}
+
+.tag {
+  background-color: #e2e8f0;
+  color: #4b5563;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.documentContent {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 600px;
+  background-color: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.documentImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.documentPdf {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.documentAudio {
+  width: 80%;
+}
+
+.documentVideo {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.unsupportedFormat {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}
+
+.unsupportedFormat a {
+  display: block;
+  margin-top: 10px;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.unsupportedFormat a:hover {
+  text-decoration: underline;
+}
+
+/* New case form */
+.newCaseForm {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto 20px;
+}
+
+.newCaseForm h3 {
+  color: #1e40af;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.formGroup textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancelButton {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
+.cancelButton:hover {
+  background-color: #e5e7eb;
+}

@@ -24,6 +24,8 @@
   display: flex;
   border-bottom: 1px solid #e5e7eb;
   margin-bottom: 20px;
+  overflow-x: auto; /* Allow horizontal scrolling on small screens */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
 }
 
 .tab {
@@ -36,6 +38,7 @@
   font-weight: 500;
   transition: all 0.2s ease;
   position: relative;
+  white-space: nowrap; /* Prevent tab text from wrapping */
 }
 
 .tab:hover {
@@ -96,6 +99,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  gap: 10px; /* Add gap between wrapped items */
 }
 
 .casesHeader h3 {
@@ -229,6 +234,7 @@
   display: flex;
   gap: 10px;
   margin-top: 8px;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .caseDescription {
@@ -241,6 +247,8 @@
   display: flex;
   justify-content: flex-start;
   margin-bottom: 20px;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  gap: 10px; /* Add gap for wrapped buttons */
 }
 
 .caseDocuments {
@@ -460,6 +468,7 @@
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .cancelButton {
@@ -470,4 +479,52 @@
 
 .cancelButton:hover {
   background-color: #e5e7eb;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .pageHeader h1 {
+    font-size: 1.75rem;
+  }
+  
+  .pageHeader p {
+    font-size: 1rem;
+  }
+  
+  .documentContent {
+    height: 400px; /* Smaller height on mobile */
+  }
+  
+  .casesList {
+    grid-template-columns: 1fr; /* Single column on mobile */
+  }
+  
+  .checklistItems {
+    grid-template-columns: 1fr; /* Single column on mobile */
+  }
+  
+  .formActions {
+    justify-content: space-between; /* Spread buttons on mobile */
+  }
+  
+  .formActions button {
+    flex: 1; /* Make buttons take equal space */
+    min-width: 120px; /* Ensure minimum button width */
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .documentationPage {
+    padding: 15px 10px; /* Smaller padding on very small screens */
+  }
+  
+  .tab {
+    padding: 10px 15px; /* Smaller tab padding */
+    font-size: 14px; /* Smaller font size */
+  }
+  
+  .documentContent {
+    height: 300px; /* Even smaller height on small devices */
+  }
 }

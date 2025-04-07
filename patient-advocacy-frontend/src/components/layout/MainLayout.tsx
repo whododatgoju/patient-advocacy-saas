@@ -110,8 +110,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
               className={styles.mobileMenuButton}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+              <span className={styles.srOnly}>Menu</span>
             </button>
           </div>
         </div>

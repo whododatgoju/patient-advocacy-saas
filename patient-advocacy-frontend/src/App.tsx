@@ -144,56 +144,62 @@ function App() {
               {showInstallPrompt && <InstallPWAPrompt />}
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
-                  <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/signup" element={<SignupPage />} />
-                  
-                  {/* Protected Routes */}
-                  <Route path="/dashboard" element={
-                    <ProtectedRoute>
-                      <DashboardPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/journal" element={
-                    <ProtectedRoute>
-                      <JournalPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/profile" element={
-                    <ProtectedRoute>
-                      <ProfilePage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/resources" element={
-                    <ProtectedRoute>
-                      <ResourcesPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/resources/:id" element={
-                    <ProtectedRoute>
-                      <ResourceDetailsPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/advocate-match" element={
-                    <ProtectedRoute>
-                      <AdvocateMatchPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/video-call/:callId" element={
-                    <ProtectedRoute>
-                      <VideoCallPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/schedule-call" element={
-                    <ProtectedRoute>
-                      <ScheduleCallPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/documentation" element={
-                    <ProtectedRoute>
-                      <DocumentationPage />
-                    </ProtectedRoute>
-                  } />
+                  <Route path="/" element={<MainLayout />}>
+                    <Route path="home" element={<HomePage />} />
+                    <Route path="dashboard" element={
+                      <ProtectedRoute>
+                        <DashboardPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="journal" element={
+                      <ProtectedRoute>
+                        <JournalPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="documentation" element={
+                      <ProtectedRoute>
+                        <DocumentationPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="video">
+                      <Route path="schedule-call" element={
+                        <ProtectedRoute>
+                          <ScheduleCallPage />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="call" element={
+                        <ProtectedRoute>
+                          <VideoCallPage />
+                        </ProtectedRoute>
+                      } />
+                    </Route>
+                    <Route path="resources">
+                      <Route index element={
+                        <ProtectedRoute>
+                          <ResourcesPage />
+                        </ProtectedRoute>
+                      } />
+                      <Route path=":id" element={
+                        <ProtectedRoute>
+                          <ResourceDetailsPage />
+                        </ProtectedRoute>
+                      } />
+                    </Route>
+                    <Route path="advocate">
+                      <Route path="match" element={
+                        <ProtectedRoute>
+                          <AdvocateMatchPage />
+                        </ProtectedRoute>
+                      } />
+                    </Route>
+                    <Route path="profile" element={
+                      <ProtectedRoute>
+                        <ProfilePage />
+                      </ProtectedRoute>
+                    } />
+                  </Route>
                 </Routes>
               </Suspense>
             </div>

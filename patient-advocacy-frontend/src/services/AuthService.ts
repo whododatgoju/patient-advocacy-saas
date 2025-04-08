@@ -122,50 +122,46 @@ const AuthService = {
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      // Check if this is a test user login
-      const isTestPatient = credentials.email === 'test@patient.com' && credentials.password === 'password123';
-      const isTestAdvocate = credentials.email === 'test@advocate.com' && credentials.password === 'password123';
-      const isTestProvider = credentials.email === 'test@provider.com' && credentials.password === 'password123';
-      
-      if (isTestPatient || isTestAdvocate || isTestProvider) {
-        console.log('Using test user credentials');
+      if (import.meta.env.MODE === 'development' || import.meta.env.VITE_USE_MOCK_API === 'true') {
+        // For demo & development - mock a successful login
+        const { email } = credentials;
         
-        // Determine which test user to use
+        // Determine which test user to return based on email
         let testUser;
-        if (isTestPatient) testUser = TEST_USERS.patient;
-        if (isTestAdvocate) testUser = TEST_USERS.advocate;
-        if (isTestProvider) testUser = TEST_USERS.provider;
         
-        // Create mock response
-        const mockResponse: AuthResponse = {
+        if (email.includes('patient')) {
+          testUser = TEST_USERS.patient;
+        } else if (email.includes('advocate')) {
+          testUser = TEST_USERS.advocate;
+        } else if (email.includes('provider')) {
+          testUser = TEST_USERS.provider;
+        } else {
+          // Default to patient
+          testUser = TEST_USERS.patient;
+        }
+        
+        // Mock response
+        const response: AuthResponse = {
           status: 'success',
-          token: 'test-token-' + Date.now(), // Create a unique token
+          token: 'mock-token-123',
           data: {
             user: testUser as UserData
           }
         };
         
-        // Store in localStorage
-        localStorage.setItem('user', JSON.stringify(mockResponse));
-        localStorage.setItem('token', mockResponse.token);
-        localStorage.setItem('isTestUser', 'true');
+        // Store the token and user data
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response));
         
-        return mockResponse;
+        return Promise.resolve(response);
       }
       
       // Regular authentication flow for non-test users
-      const response = await axios.post<AuthResponse>(
-        `${API_URL}/api/auth/login`,
-        credentials
-      );
+      const response = await axios.post(`${API_URL}/api/auth/login`, credentials);
       
-      if (response.data.token) {
-        // Store user info in local storage
-        localStorage.setItem('user', JSON.stringify(response.data));
-        // Store token separately for easier access
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('isTestUser', 'false');
-      }
+      // Store the token and user data
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data));
       
       return response.data;
     } catch (error) {
@@ -173,7 +169,7 @@ const AuthService = {
       throw error;
     }
   },
-
+  
   /**
    * Register new user
    * @param userData User registration data
@@ -181,17 +177,40 @@ const AuthService = {
    */
   async signup(userData: SignupData): Promise<AuthResponse> {
     try {
-      const response = await axios.post<AuthResponse>(
-        `${API_URL}/api/auth/signup`,
-        userData
-      );
-      
-      if (response.data.token) {
-        // Store user info in local storage
-        localStorage.setItem('user', JSON.stringify(response.data));
-        // Store token separately for easier access
-        localStorage.setItem('token', response.data.token);
+      if (import.meta.env.MODE === 'development' || import.meta.env.VITE_USE_MOCK_API === 'true') {
+        // For demo & development - mock a successful registration
+        const mockUser = {
+          _id: `new-user-${Date.now()}`,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role || 'patient',
+          bio: userData.bio || '',
+          specialty: userData.specialty || '',
+          createdAt: new Date()
+        } as UserData;
+        
+        // Mock response
+        const response: AuthResponse = {
+          status: 'success',
+          token: 'mock-token-new-123',
+          data: {
+            user: mockUser
+          }
+        };
+        
+        // Store the token and user data
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response));
+        
+        return Promise.resolve(response);
       }
+      
+      // Real API call
+      const response = await axios.post(`${API_URL}/api/auth/signup`, userData);
+      
+      // Store the token and user data
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data));
       
       return response.data;
     } catch (error) {
@@ -199,14 +218,16 @@ const AuthService = {
       throw error;
     }
   },
-
+  
   /**
    * Logout user
    */
   logout(): void {
-    localStorage.removeItem('user');
+    // Clear storage
     localStorage.removeItem('token');
-    localStorage.removeItem('isTestUser');
+    localStorage.removeItem('user');
+    localStorage.removeItem('authToken'); // Remove legacy key if exists
+    localStorage.removeItem('userData'); // Remove legacy key if exists
   },
 
   /**
@@ -218,6 +239,31 @@ const AuthService = {
     if (userStr) {
       return JSON.parse(userStr);
     }
+    
+    // Check for legacy storage format as fallback
+    const legacyUserData = localStorage.getItem('userData');
+    if (legacyUserData) {
+      const userData = JSON.parse(legacyUserData);
+      const token = localStorage.getItem('authToken') || '';
+      
+      // Convert to new format
+      const response: AuthResponse = {
+        status: 'success',
+        token,
+        data: userData.data
+      };
+      
+      // Update storage to new format
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(response));
+      
+      // Clean up legacy storage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userData');
+      
+      return response;
+    }
+    
     return null;
   },
 
@@ -226,7 +272,21 @@ const AuthService = {
    * @returns JWT token string or null if not logged in
    */
   getToken(): string | null {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (token) {
+      return token;
+    }
+    
+    // Check for legacy token as fallback
+    const legacyToken = localStorage.getItem('authToken');
+    if (legacyToken) {
+      // Update to new format
+      localStorage.setItem('token', legacyToken);
+      localStorage.removeItem('authToken');
+      return legacyToken;
+    }
+    
+    return null;
   },
 
   /**

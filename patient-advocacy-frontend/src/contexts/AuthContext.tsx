@@ -85,8 +85,17 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
           // The test patient by default
           const testUser = TEST_USERS.patient as UserData;
           setUser(testUser);
-          localStorage.setItem('authToken', 'mock-token-123');
-          localStorage.setItem('userData', JSON.stringify({ data: { user: testUser } }));
+          
+          // Store test user in the same format as real users for consistency
+          const mockAuthResponse = {
+            status: 'success',
+            token: 'mock-token-123',
+            data: { user: testUser }
+          };
+          
+          localStorage.setItem('token', 'mock-token-123');
+          localStorage.setItem('user', JSON.stringify(mockAuthResponse));
+          
           console.info('🔑 Using test user account (legacy mode). To disable, set USE_TEST_USER to false in AuthContext.tsx');
         }
       } catch (err) {

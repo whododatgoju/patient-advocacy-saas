@@ -1,32 +1,33 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
-import { AuthProvider, useAuth } from './contexts/AuthContext'
-import { AccessibilityProvider } from './contexts/AccessibilityContext'
-import { ThemeProvider } from './contexts/ThemeContext'
-import AccessibilityPanel from './components/common/AccessibilityPanel'
-import KeyboardShortcutsGuide from './components/common/KeyboardShortcutsGuide'
-import InstallPWAPrompt from './components/common/InstallPWAPrompt'
-import './styles/accessibility.css'
-import './styles/performance.css'
-import './styles/designTokens.css'
-import './styles/globalTheme.css'
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { isRunningStandalone } from './pwaUtils'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AccessibilityProvider } from './contexts/AccessibilityContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import AccessibilityPanel from './components/common/AccessibilityPanel';
+import KeyboardShortcutsGuide from './components/common/KeyboardShortcutsGuide';
+import InstallPWAPrompt from './components/common/InstallPWAPrompt';
+import './styles/accessibility.css';
+import './styles/performance.css';
+import './styles/designTokens.css';
+import './styles/globalTheme.css';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { isRunningStandalone } from './pwaUtils';
 
 // Lazy load pages to improve initial loading performance
-const HomePage = lazy(() => import('./pages/HomePage'))
-const DashboardPage = lazy(() => import('./pages/DashboardPage'))
-const JournalPage = lazy(() => import('./pages/JournalPage'))
-const ResourcesPage = lazy(() => import('./pages/ResourcesPage'))
-const ResourceDetailsPage = lazy(() => import('./pages/ResourceDetailsPage'))
-const AdvocateMatchPage = lazy(() => import('./pages/AdvocateMatchPage'))
-const ProfilePage = lazy(() => import('./pages/ProfilePage'))
-const LoginPage = lazy(() => import('./pages/LoginPage'))
-const SignupPage = lazy(() => import('./pages/SignupPage'))
-const VideoCallPage = lazy(() => import('./pages/VideoCallPage'))
-const ScheduleCallPage = lazy(() => import('./pages/ScheduleCallPage'))
-const DocumentationPage = lazy(() => import('./pages/DocumentationPage'))
+const HomePage = lazy(() => import('./pages/home/HomePage'));
+const DashboardPage = lazy(() => import('./pages/dashboard/DashboardPage'));
+const JournalPage = lazy(() => import('./pages/journal/JournalPage'));
+const ResourcesPage = lazy(() => import('./pages/resources/ResourcesPage'));
+const ResourceDetailsPage = lazy(() => import('./pages/resources/ResourceDetailsPage'));
+const AdvocateMatchPage = lazy(() => import('./pages/advocate/AdvocateMatchPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignupPage = lazy(() => import('./pages/SignupPage'));
+const VideoCallPage = lazy(() => import('./pages/video/VideoCallPage'));
+const ScheduleCallPage = lazy(() => import('./pages/video/ScheduleCallPage'));
+const DocumentationPage = lazy(() => import('./pages/documentation/DocumentationPage'));
 
 // Loading component for suspense fallback
 const LoadingSpinner = () => (

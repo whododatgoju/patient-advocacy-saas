@@ -48,9 +48,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       }
     }
     
-    document.addEventListener('mousedown', handleClickOutside);
+    // Use capture phase to ensure event is caught early in the event propagation
+    document.addEventListener('mousedown', handleClickOutside, true);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside, true);
     };
   }, []);
 
@@ -112,7 +113,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Stop event from propagating to document
+                    setProfileDropdownOpen(!profileDropdownOpen);
+                  }}
                   className={styles.profileButton}
                 >
                   <FiUser className={styles.profileIcon} />
@@ -120,7 +124,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 </Button>
 
                 {profileDropdownOpen && (
-                  <div className={styles.profileDropdown}>
+                  <div 
+                    className={styles.profileDropdown}
+                    onClick={(e) => e.stopPropagation()} // Prevent clicks in dropdown from closing it
+                  >
                     <Link to="/profile" className={styles.dropdownItem} onClick={() => setProfileDropdownOpen(false)}>
                       <FiUser className={styles.dropdownIcon} />
                       View Profile

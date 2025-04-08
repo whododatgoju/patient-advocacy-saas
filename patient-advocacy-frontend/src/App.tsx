@@ -27,6 +27,7 @@ const SignupPage = lazy(() => import('./pages/SignupPage'))
 const VideoCallPage = lazy(() => import('./pages/VideoCallPage'))
 const ScheduleCallPage = lazy(() => import('./pages/ScheduleCallPage'))
 const DocumentationPage = lazy(() => import('./pages/DocumentationPage'))
+const AppointmentsPage = lazy(() => import('./pages/AppointmentsPage'))
 
 // Loading component for suspense fallback
 const LoadingSpinner = () => (
@@ -192,6 +193,11 @@ function App() {
                   <Route path="/documentation" element={
                     <ProtectedRoute>
                       <DocumentationPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/appointments" element={
+                    <ProtectedRoute>
+                      <AppointmentsPage />
                     </ProtectedRoute>
                   } />
                 </Routes>

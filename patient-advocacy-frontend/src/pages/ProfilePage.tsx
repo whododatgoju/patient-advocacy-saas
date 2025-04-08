@@ -222,17 +222,13 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
     try {
       setIsSaving(true);
       
-      // In a real app, you would upload the file to a storage service
-      // For this demo, we'll use a URL input instead of file upload
-      const profilePictureUrl = URL.createObjectURL(file);
+      // Use the proper method for uploading files
+      const updatedUser = await UserService.uploadProfilePicture(file);
       
-      // Update the avatar in our UserService
-      await UserService.updateProfile({ profilePicture: profilePictureUrl });
-      
-      // Update local state
+      // Update local state with the returned profile picture URL
       setProfile({
         ...profile,
-        avatar: profilePictureUrl
+        avatar: updatedUser.profilePicture || profile.avatar
       });
       
       setNotification({
@@ -242,7 +238,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
     } catch (err) {
       console.error('Error updating profile picture:', err);
       setNotification({
-        message: 'Failed to update profile picture',
+        message: 'Failed to update profile picture. Please try again.',
         type: 'error'
       });
     } finally {

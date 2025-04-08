@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from '../common/Button';
 import ThemeToggle from '../common/ThemeToggle';
 import styles from './MainLayout.module.css';
-import { FiMenu, FiX, FiLogOut } from 'react-icons/fi';
+import { FiMenu, FiX, FiLogOut, FiUser, FiSettings, FiCommand } from 'react-icons/fi';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface MainLayoutProps {
@@ -16,9 +16,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   role = 'patient' 
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const dropdownRef = useRef<HTMLDivElement>(null);
   
   // Close mobile menu when route changes
   useEffect(() => {
@@ -38,6 +40,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     };
   }, [mobileMenuOpen]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setProfileDropdownOpen(false);
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const roleStyle = {
     patient: styles.logoPatient,
     advocate: styles.logoAdvocate,
@@ -53,6 +69,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const handleLogout = () => {
     logout();
     navigate('/login');
+    setProfileDropdownOpen(false);
+  };
+
+  const toggleTheme = () => {
+    // This will be handled by the ThemeToggle component
+    // Just closing the dropdown here
+    setProfileDropdownOpen(false);
   };
 
   return (
@@ -85,24 +108,44 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 {roleLabel[role]}
               </div>
               
-              <Link to="/profile">
+              <div className={styles.profileDropdownContainer} ref={dropdownRef}>
                 <Button
                   variant="secondary"
                   size="sm"
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className={styles.profileButton}
                 >
+                  <FiUser className={styles.profileIcon} />
                   My Profile
                 </Button>
-              </Link>
 
-              <Button
-                variant="tertiary"
-                size="sm"
-                onClick={handleLogout}
-                className={styles.logoutButton}
-              >
-                <FiLogOut className={styles.logoutIcon} />
-                Logout
-              </Button>
+                {profileDropdownOpen && (
+                  <div className={styles.profileDropdown}>
+                    <Link to="/profile" className={styles.dropdownItem} onClick={() => setProfileDropdownOpen(false)}>
+                      <FiUser className={styles.dropdownIcon} />
+                      View Profile
+                    </Link>
+                    <Link to="/settings" className={styles.dropdownItem} onClick={() => setProfileDropdownOpen(false)}>
+                      <FiSettings className={styles.dropdownIcon} />
+                      Settings
+                    </Link>
+                    <div className={styles.dropdownDivider}></div>
+                    <div className={styles.dropdownItem} onClick={toggleTheme}>
+                      <ThemeToggle />
+                      <span>Appearance Theme</span>
+                    </div>
+                    <Link to="/keyboard-shortcuts" className={styles.dropdownItem} onClick={() => setProfileDropdownOpen(false)}>
+                      <FiCommand className={styles.dropdownIcon} />
+                      Keyboard Shortcuts
+                    </Link>
+                    <div className={styles.dropdownDivider}></div>
+                    <button className={styles.dropdownItem} onClick={handleLogout}>
+                      <FiLogOut className={styles.dropdownIcon} />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
             
             {/* Mobile Menu Button */}

@@ -6,10 +6,6 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import AuthService, { UserData, LoginCredentials, SignupData } from '../services/AuthService';
 
-// We'll keep this for backward compatibility but our primary method 
-// will now be using the AuthService implementation
-const USE_TEST_USER = false;
-
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -35,163 +31,95 @@ const AuthContext = createContext<AuthContextType>({
   clearError: () => {},
 });
 
-// Test user data for quick login/testing
-const TEST_USERS = {
-  patient: {
-    _id: 'test-patient-123',
-    name: 'Test Patient',
-    email: 'test@patient.com',
-    role: 'patient',
-    bio: 'I am a test patient account for demonstration purposes.',
-    createdAt: new Date()
-  },
-  advocate: {
-    _id: 'test-advocate-123',
-    name: 'Test Advocate',
-    email: 'test@advocate.com',
-    role: 'advocate',
-    specialty: 'General Healthcare Navigation',
-    bio: 'I am a test advocate account for demonstration purposes.',
-    createdAt: new Date()
-  },
-  provider: {
-    _id: 'test-provider-123',
-    name: 'Dr. Test Provider',
-    email: 'test@provider.com',
-    role: 'provider',
-    specialty: 'Family Medicine',
-    bio: 'I am a test provider account for demonstration purposes.',
-    createdAt: new Date()
-  }
-};
-
-// Provider component to wrap around app components
-export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
-  const [user, setUser] = useState<UserData | null>(null);
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<UserData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if user is already logged in on initial load
   useEffect(() => {
-    const initAuth = () => {
+    // Check if user is logged in on mount
+    const checkAuth = async () => {
       try {
-        // Try to get user data from localStorage (handled by AuthService)
-        const userData = AuthService.getCurrentUser();
-        
-        if (userData) {
-          setUser(userData.data.user);
-        } else if (USE_TEST_USER) {
-          // This is for backward compatibility
-          // The test patient by default
-          const testUser = TEST_USERS.patient as UserData;
-          setUser(testUser);
-          
-          // Store test user in the same format as real users for consistency
-          const mockAuthResponse = {
-            status: 'success',
-            token: 'mock-token-123',
-            data: { user: testUser }
-          };
-          
-          localStorage.setItem('token', 'mock-token-123');
-          localStorage.setItem('user', JSON.stringify(mockAuthResponse));
-          
-          console.info('🔑 Using test user account (legacy mode). To disable, set USE_TEST_USER to false in AuthContext.tsx');
+        const currentUser = AuthService.getCurrentUser();
+        if (currentUser) {
+          setIsAuthenticated(true);
+          setUser(currentUser.data.user);
         }
       } catch (err) {
-        console.error('Failed to initialize authentication', err);
-        // Clear potential corrupted data
-        AuthService.logout();
+        console.error('Error checking auth:', err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    initAuth();
+    checkAuth();
   }, []);
 
   const login = async (credentials: LoginCredentials) => {
-    setIsLoading(true);
-    setError(null);
-    
     try {
       const response = await AuthService.login(credentials);
+      setIsAuthenticated(true);
       setUser(response.data.user);
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError('Login failed. Please check your credentials and try again.');
-      }
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
       throw err;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const signup = async (userData: SignupData) => {
-    setIsLoading(true);
-    setError(null);
-    
     try {
       const response = await AuthService.signup(userData);
+      setIsAuthenticated(true);
       setUser(response.data.user);
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError('Registration failed. Please try again.');
-      }
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Signup failed');
       throw err;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const logout = () => {
     AuthService.logout();
+    setIsAuthenticated(false);
     setUser(null);
+    setError(null);
   };
 
   const updateUser = (updatedUserData: UserData) => {
     setUser(updatedUserData);
-    
-    // Update localStorage if not using test user
-    if (!USE_TEST_USER) {
-      const currentUserData = AuthService.getCurrentUser();
-      if (currentUserData) {
-        const updatedStorage = {
-          ...currentUserData,
-          data: {
-            ...currentUserData.data,
-            user: updatedUserData
-          }
-        };
-        localStorage.setItem('user', JSON.stringify(updatedStorage));
-      }
-    }
   };
 
   const clearError = () => {
     setError(null);
   };
 
-  const value = {
-    isAuthenticated: !!user,
-    isLoading,
-    user,
-    login,
-    signup,
-    logout,
-    updateUser,
-    error,
-    clearError,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        isLoading,
+        user,
+        login,
+        signup,
+        logout,
+        updateUser,
+        error,
+        clearError,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-// Custom hook to use the auth context
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
 export default AuthContext;

@@ -6,12 +6,9 @@
 import axios from 'axios';
 import AuthService from './AuthService';
 
-// Base URL for API (netlify functions use this path pattern)
-const API_URL = '/.netlify/functions/api';
-
 // Create axios instance with base configuration
 const apiClient = axios.create({
-  baseURL: API_URL,
+  baseURL: import.meta.env.VITE_API_URL || '/.netlify/functions/api',
   headers: {
     'Content-Type': 'application/json',
   },

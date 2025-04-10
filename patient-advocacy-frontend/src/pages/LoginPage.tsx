@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styles from './LoginPage.module.css';
 import { FiMail, FiLock, FiUser, FiArrowRight } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
+import { isDevBypassEnabled } from '../config/development';
 
 // Toggle this flag to show test user buttons
 const SHOW_TEST_USERS = true;
@@ -75,6 +76,20 @@ const LoginPage: React.FC = () => {
       // In case of error during login
       setError(`Failed to log in as test ${userType}. Try again or use normal login.`);
       setIsLoading(false);
+    }
+  };
+
+  const handleDevBypass = async () => {
+    if (!isDevBypassEnabled()) {
+      setError('Development bypass is not enabled in this environment');
+      return;
+    }
+
+    try {
+      await login({ email: 'dev', password: process.env.VITE_DEV_BYPASS_KEY || 'dev-bypass-2025' });
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Development bypass failed.');
     }
   };
 
@@ -224,6 +239,15 @@ const LoginPage: React.FC = () => {
               </ul>
             </div>
           </div>
+        )}
+        
+        {isDevBypassEnabled() && (
+          <button 
+            onClick={handleDevBypass}
+            className={styles.devBypassButton}
+          >
+            Development Bypass (Test User)
+          </button>
         )}
         
         <div className={styles.divider}>

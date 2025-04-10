@@ -4,6 +4,7 @@
  */
 
 import axios from 'axios';
+import { DEV_USERS, DEV_BYPASS_KEY, isDevBypassEnabled } from '../config/development';
 
 // Base URL for API (netlify functions use this path pattern)
 const API_URL = '/.netlify/functions/api';
@@ -104,9 +105,51 @@ export interface SignupData {
   }[];
 }
 
+// Add development bypass function
+async function devBypassLogin(role: keyof typeof DEV_USERS, bypassKey: string): Promise<AuthResponse> {
+  if (!isDevBypassEnabled()) {
+    throw new Error('Development bypass is not enabled');
+  }
+
+  if (bypassKey !== DEV_BYPASS_KEY) {
+    throw new Error('Invalid development bypass key');
+  }
+
+  const testUser = DEV_USERS[role];
+  if (!testUser) {
+    throw new Error('Invalid user role');
+  }
+
+  // Create mock response
+  const mockResponse: AuthResponse = {
+    status: 'success',
+    token: `dev-token-${Date.now()}`,
+    data: {
+      user: {
+        ...testUser,
+        _id: testUser.id,
+        createdAt: new Date(),
+        bio: `Development ${testUser.role} account`,
+        specialty: testUser.role === 'provider' ? 'General Practice' : undefined
+      }
+    }
+  };
+
+  // Store in localStorage
+  localStorage.setItem('token', mockResponse.token);
+  localStorage.setItem('user', JSON.stringify(mockResponse));
+
+  return mockResponse;
+}
+
 export default {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
+      // Check for development bypass
+      if (credentials.email === 'dev' && credentials.password === DEV_BYPASS_KEY) {
+        return await devBypassLogin('patient', credentials.password);
+      }
+
       const response = await axios.post(`${API_URL}/login`, credentials);
       const { token, user } = response.data;
       

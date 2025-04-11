@@ -4,188 +4,71 @@
  */
 
 import axios from 'axios';
-import AuthService from './AuthService';
 
-// Create axios instance with base configuration
-const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/.netlify/functions/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+// Base URL for our API gateway
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
+// Add authentication token to requests
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
-// Add request interceptor to include auth token in every request
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = AuthService.getToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
+// Handle API errors
+axios.interceptors.response.use(
+  (response) => response,
   (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Add response interceptor to handle common errors
-apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async (error) => {
-    // Handle 401 Unauthorized errors (token expired)
-    if (error.response && error.response.status === 401) {
-      // Logout user if token is invalid or expired
-      AuthService.logout();
-      // Redirect to login page if not already there
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
+    if (error.response?.status === 401) {
+      // Handle unauthorized access
+      localStorage.removeItem('authToken');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
 
-// Journal Entry interfaces
-export interface JournalEntry {
-  id?: number;
-  date: string;
-  title: string;
-  content: string;
-  mood: string;
-  tags: string[];
-  videoBlob?: Blob | null;
-  symptoms?: Symptom[];
-  bodyRegions?: string[];
+// Interfaces
+interface AuthResponse {
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    displayName: string;
+    role: string;
+  };
 }
 
-export interface Symptom {
+interface Profile {
   id: string;
-  name: string;
-  severity: number;
-  location?: string[];
-  timeOfDay?: string;
-  duration?: string;
-  triggers?: string[];
-  notes?: string;
-  date: Date;
+  email: string;
+  displayName: string;
+  role: string;
 }
 
-// API Service with methods for different resources
-const ApiService = {
-  // Journal Entries
-  journals: {
-    getAll: async () => {
-      return apiClient.get('/api/journal-entries');
-    },
-    getById: async (id: string) => {
-      return apiClient.get(`/api/journal-entries/${id}`);
-    },
-    create: async (entry: JournalEntry) => {
-      // Handle video upload if present
-      if (entry.videoBlob) {
-        const formData = new FormData();
-        formData.append('video', entry.videoBlob);
-        formData.append('entry', JSON.stringify({
-          ...entry,
-          videoBlob: null // Remove blob from JSON
-        }));
-        return apiClient.post('/api/journal-entries', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-      }
-      return apiClient.post('/api/journal-entries', entry);
-    },
-    update: async (id: string, entry: JournalEntry) => {
-      // Handle video upload if present
-      if (entry.videoBlob instanceof Blob) {
-        const formData = new FormData();
-        formData.append('video', entry.videoBlob);
-        formData.append('entry', JSON.stringify({
-          ...entry,
-          videoBlob: null // Remove blob from JSON
-        }));
-        return apiClient.put(`/api/journal-entries/${id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-      }
-      return apiClient.put(`/api/journal-entries/${id}`, entry);
-    },
-    delete: async (id: string) => {
-      return apiClient.delete(`/api/journal-entries/${id}`);
-    }
-  },
+// API endpoints
+export const api = {
+  // Authentication endpoints
+  login: (credentials: { email: string; password: string }) => 
+    axios.post<AuthResponse>(`${API_BASE_URL}/auth/login`, credentials),
 
-  // Symptoms
-  symptoms: {
-    getAll: async () => {
-      return apiClient.get('/api/symptoms');
-    },
-    getById: async (id: string) => {
-      return apiClient.get(`/api/symptoms/${id}`);
-    },
-    create: async (symptom: Symptom) => {
-      return apiClient.post('/api/symptoms', symptom);
-    },
-    update: async (id: string, symptom: Symptom) => {
-      return apiClient.put(`/api/symptoms/${id}`, symptom);
-    },
-    delete: async (id: string) => {
-      return apiClient.delete(`/api/symptoms/${id}`);
-    }
-  },
+  // Profile endpoints
+  getProfile: () => axios.get<Profile>(`${API_BASE_URL}/profile`),
+  updateProfile: (updates: Partial<Profile>) => 
+    axios.patch<Profile>(`${API_BASE_URL}/profile`, updates),
 
-  // User Profile
-  profile: {
-    get: async () => {
-      return apiClient.get('/api/users/me');
-    },
-    update: async (userData: any) => {
-      return apiClient.put('/api/users/me', userData);
-    },
-    updatePassword: async (passwordData: {
-      currentPassword: string;
-      newPassword: string;
-      confirmPassword: string;
-    }) => {
-      return apiClient.put('/api/users/password', passwordData);
-    }
-  },
-
-  // Video Calls
-  videoCalls: {
-    getAll: async () => {
-      return apiClient.get('/api/video-calls');
-    },
-    getById: async (id: string) => {
-      return apiClient.get(`/api/video-calls/${id}`);
-    },
-    create: async (callData: any) => {
-      return apiClient.post('/api/video-calls', callData);
-    },
-    update: async (id: string, callData: any) => {
-      return apiClient.put(`/api/video-calls/${id}`, callData);
-    },
-    delete: async (id: string) => {
-      return apiClient.delete(`/api/video-calls/${id}`);
-    }
-  },
-
-  // Upload file (general purpose)
-  uploadFile: async (file: File, path: string) => {
+  // File upload endpoint
+  uploadFile: (file: File, path: string) => {
     const formData = new FormData();
-    formData.append('file', file);
-    return apiClient.post(`/api/upload/${path}`, formData, {
+    formData.append('file', file as unknown as Blob);
+    return axios.post(`${API_BASE_URL}/upload`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
   }
 };
 
-export default ApiService;
+export default api;

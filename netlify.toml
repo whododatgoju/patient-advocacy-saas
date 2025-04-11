@@ -23,12 +23,6 @@
   to = "/index.html"
   status = 200
 
-# Proxy API requests to serverless functions
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
-  status = 200
-
 # Force HTTPS
 [[redirects]]
   from = "http://*"

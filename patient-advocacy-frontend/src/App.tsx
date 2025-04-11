@@ -115,6 +115,29 @@ const KeyboardNavigation: React.FC = () => {
   return null;
 };
 
+// Error Boundary component
+const ErrorBoundary: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [hasError, setHasError] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (hasError) {
+      console.error('ErrorBoundary caught error:', error);
+    }
+  }, [hasError, error]);
+
+  if (hasError) {
+    return (
+      <div className="error-boundary">
+        <h2>Something went wrong</h2>
+        <button onClick={() => window.location.reload()}>Try again</button>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+};
+
 function App() {
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
@@ -143,71 +166,142 @@ function App() {
               <AccessibilityPanel />
               <KeyboardShortcutsGuide />
               {showInstallPrompt && <InstallPWAPrompt />}
-              <Suspense fallback={<LoadingSpinner />}>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/signup" element={<SignupPage />} />
-                  
-                  {/* Protected Routes */}
-                  <Route path="/dashboard" element={
-                    <ProtectedRoute>
-                      <DashboardPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/journal" element={
-                    <ProtectedRoute>
-                      <JournalPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/profile" element={
-                    <ProtectedRoute>
-                      <ProfilePage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/resources" element={
-                    <ProtectedRoute>
-                      <ResourcesPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/resources/:id" element={
-                    <ProtectedRoute>
-                      <ResourceDetailsPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/advocate-match" element={
-                    <ProtectedRoute>
-                      <AdvocateMatchPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/video-call/:callId" element={
-                    <ProtectedRoute>
-                      <VideoCallPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/schedule-call" element={
-                    <ProtectedRoute>
-                      <ScheduleCallPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/documentation" element={
-                    <ProtectedRoute>
-                      <DocumentationPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/appointments" element={
-                    <ProtectedRoute>
-                      <AppointmentsPage />
-                    </ProtectedRoute>
-                  } />
-                </Routes>
-              </Suspense>
+              <ErrorBoundary>
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Routes>
+                    <Route 
+                      path="/" 
+                      element={
+                        <ErrorBoundary>
+                          <HomePage />
+                        </ErrorBoundary>
+                      } 
+                    />
+                    <Route 
+                      path="/login" 
+                      element={
+                        <ErrorBoundary>
+                          <LoginPage />
+                        </ErrorBoundary>
+                      } 
+                    />
+                    <Route 
+                      path="/signup" 
+                      element={
+                        <ErrorBoundary>
+                          <SignupPage />
+                        </ErrorBoundary>
+                      } 
+                    />
+                    <Route 
+                      path="/dashboard" 
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <DashboardPage />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/journal" 
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <JournalPage />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/resources" 
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <ResourcesPage />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/resources/:id" 
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <ResourceDetailsPage />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/advocate-match" 
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <AdvocateMatchPage />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/profile" 
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <ProfilePage />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/video-call/:callId" 
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <VideoCallPage />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/schedule-call" 
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <ScheduleCallPage />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/documentation" 
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <DocumentationPage />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/appointments" 
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <AppointmentsPage />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      } 
+                    />
+                  </Routes>
+                </Suspense>
+              </ErrorBoundary>
             </div>
           </Router>
         </ThemeProvider>
       </AccessibilityProvider>
     </AuthProvider>
-  )
+  );
 }
 
 export default App

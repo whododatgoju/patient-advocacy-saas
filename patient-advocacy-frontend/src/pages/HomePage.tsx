@@ -21,7 +21,7 @@ const HomePage: React.FC = () => {
               <Link to="/signup">
                 <Button variant="primary" size="lg">Sign Up</Button>
               </Link>
-              <Link to="/login">
+              <Link to="/login" className={styles.loginLink}>
                 <Button variant="secondary" size="lg">Login</Button>
               </Link>
             </div>

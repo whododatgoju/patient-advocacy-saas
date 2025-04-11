@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styles from './LoginPage.module.css';
 import { FiMail, FiLock, FiUser, FiArrowRight, FiEye, FiEyeOff } from 'react-icons/fi';
-import { useAuth } from '../contexts/AuthContext';
+import { firebaseAuthService, USER_ROLES } from '../firebaseAuth';
 import { isDevBypassEnabled } from '../config/development';
+import { logUserLogin, logError } from '../utils/analytics';
 
 // Toggle this flag to show test user buttons
 const SHOW_TEST_USERS = true;
@@ -11,10 +12,9 @@ const SHOW_TEST_USERS = true;
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isAuthenticated, error: authError, clearError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'patient' | 'advocate' | 'provider'>('patient');
+  const [role, setRole] = useState<typeof USER_ROLES[keyof typeof USER_ROLES]>(USER_ROLES.PATIENT);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,21 +25,20 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     // If already authenticated, redirect
-    if (isAuthenticated) {
-      navigate(from, { replace: true });
-    }
-    
-    // Update local error state when auth error changes
-    if (authError) {
-      setError(authError);
-      setIsLoading(false);
-    }
-  }, [isAuthenticated, navigate, authError, from]);
+    const unsubscribe = firebaseAuthService.onAuthStateChanged((user) => {
+      if (user) {
+        // Log the login event
+        logUserLogin(role);
+        navigate(from, { replace: true });
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate, from, role]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    clearError();
     
     // Validate input
     if (!email || !password) {
@@ -49,34 +48,39 @@ const LoginPage: React.FC = () => {
     
     try {
       setIsLoading(true);
-      await login({ email, password });
+      await firebaseAuthService.signIn(email, password);
       // Successfully logged in, redirect will happen in useEffect
     } catch (err) {
-      // Error handling is done via the authError state from context
+      setError(err instanceof Error ? err.message : 'Failed to sign in');
+      // Log the error
+      logError(new Error('Login failed'), 'LoginPage');
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const loginAsTestUser = async (userType: 'patient' | 'advocate' | 'provider') => {
+  const loginAsTestUser = async (userType: typeof USER_ROLES[keyof typeof USER_ROLES]) => {
     setError(null);
-    clearError();
     setIsLoading(true);
     
     // Test user credentials
-    const testCredentials = {
-      patient: { email: 'test@patient.com', password: 'password123' },
-      advocate: { email: 'test@advocate.com', password: 'password123' },
-      provider: { email: 'test@provider.com', password: 'password123' }
+    const testCredentials: Record<typeof USER_ROLES[keyof typeof USER_ROLES], { email: string; password: string }> = {
+      [USER_ROLES.PATIENT]: { email: 'test@patient.com', password: 'password123' },
+      [USER_ROLES.ADVOCATE]: { email: 'test@advocate.com', password: 'password123' },
+      [USER_ROLES.PROVIDER]: { email: 'test@provider.com', password: 'password123' },
+      [USER_ROLES.ADMIN]: { email: 'test@admin.com', password: 'password123' }
     };
     
     try {
-      // Use the login function from AuthContext
-      await login(testCredentials[userType]);
+      await firebaseAuthService.signIn(testCredentials[userType].email, testCredentials[userType].password);
+      // Log the test user login
+      logUserLogin(userType);
       // Redirect will happen in useEffect
     } catch (err) {
-      // In case of error during login
       setError(`Failed to log in as test ${userType}. Try again or use normal login.`);
       setIsLoading(false);
+      // Log the error
+      logError(new Error('Test user login failed'), 'LoginPage');
     }
   };
 
@@ -87,7 +91,7 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      await login({ email: 'dev', password: process.env.VITE_DEV_BYPASS_KEY || 'dev-bypass-2025' });
+      await firebaseAuthService.signIn('dev', process.env.VITE_DEV_BYPASS_KEY || 'dev-bypass-2025');
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Development bypass failed.');
@@ -115,8 +119,8 @@ const LoginPage: React.FC = () => {
 
         <div className={styles.roleSelector}>
           <button 
-            className={`${styles.roleButton} ${role === 'patient' ? styles.activeRole : ''}`}
-            onClick={() => setRole('patient')}
+            className={`${styles.roleButton} ${role === USER_ROLES.PATIENT ? styles.activeRole : ''}`}
+            onClick={() => setRole(USER_ROLES.PATIENT)}
           >
             <div className={styles.roleIcon} style={{ backgroundColor: 'rgba(129, 140, 248, 0.1)' }}>
               <FiUser color="#818cf8" />
@@ -124,8 +128,8 @@ const LoginPage: React.FC = () => {
             <span>Patient</span>
           </button>
           <button 
-            className={`${styles.roleButton} ${role === 'advocate' ? styles.activeRole : ''}`}
-            onClick={() => setRole('advocate')}
+            className={`${styles.roleButton} ${role === USER_ROLES.ADVOCATE ? styles.activeRole : ''}`}
+            onClick={() => setRole(USER_ROLES.ADVOCATE)}
           >
             <div className={styles.roleIcon} style={{ backgroundColor: 'rgba(52, 211, 153, 0.1)' }}>
               <FiUser color="#34d399" />
@@ -133,8 +137,8 @@ const LoginPage: React.FC = () => {
             <span>Advocate</span>
           </button>
           <button 
-            className={`${styles.roleButton} ${role === 'provider' ? styles.activeRole : ''}`}
-            onClick={() => setRole('provider')}
+            className={`${styles.roleButton} ${role === USER_ROLES.PROVIDER ? styles.activeRole : ''}`}
+            onClick={() => setRole(USER_ROLES.PROVIDER)}
           >
             <div className={styles.roleIcon} style={{ backgroundColor: 'rgba(96, 165, 250, 0.1)' }}>
               <FiUser color="#60a5fa" />
@@ -220,24 +224,31 @@ const LoginPage: React.FC = () => {
             <div className={styles.testUserButtons}>
               <button 
                 className={`${styles.testUserButton} ${styles.patientButton}`}
-                onClick={() => loginAsTestUser('patient')}
+                onClick={() => loginAsTestUser(USER_ROLES.PATIENT)}
                 disabled={isLoading}
               >
                 Login as Test Patient
               </button>
               <button 
                 className={`${styles.testUserButton} ${styles.advocateButton}`}
-                onClick={() => loginAsTestUser('advocate')}
+                onClick={() => loginAsTestUser(USER_ROLES.ADVOCATE)}
                 disabled={isLoading}
               >
                 Login as Test Advocate
               </button>
               <button 
                 className={`${styles.testUserButton} ${styles.providerButton}`}
-                onClick={() => loginAsTestUser('provider')}
+                onClick={() => loginAsTestUser(USER_ROLES.PROVIDER)}
                 disabled={isLoading}
               >
                 Login as Test Provider
+              </button>
+              <button 
+                className={`${styles.testUserButton} ${styles.adminButton}`}
+                onClick={() => loginAsTestUser(USER_ROLES.ADMIN)}
+                disabled={isLoading}
+              >
+                Login as Test Admin
               </button>
             </div>
             <div className={styles.testCredentials}>

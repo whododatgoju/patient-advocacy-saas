@@ -3,100 +3,80 @@
  * Provides authentication state and functions throughout the app
  */
 
-import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-import { firebaseAuthService, USER_ROLES } from '../firebaseAuth';
-import { User } from 'firebase/auth';
+import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../services/ApiService';
+
+// User role definitions
+export const USER_ROLES = {
+  PATIENT: 'patient',
+  ADVOCATE: 'advocate',
+  PROVIDER: 'provider',
+  ADMIN: 'admin'
+} as const;
 
 interface AuthContextType {
-  isAuthenticated: boolean;
+  user: any | null;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<boolean>;
   isLoading: boolean;
-  user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, role: 'patient' | 'advocate' | 'provider' | 'admin', displayName: string) => Promise<void>;
-  logout: () => Promise<void>;
-  error: string | null;
-  clearError: () => void;
 }
 
-// Create the Auth Context with a default value
-const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  isLoading: true,
-  user: null,
-  login: async () => {},
-  signup: async () => {},
-  logout: async () => {},
-  error: null,
-  clearError: () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Listen for auth state changes
-    const unsubscribe = firebaseAuthService.onAuthStateChanged((firebaseUser) => {
-      if (firebaseUser) {
-        setIsAuthenticated(true);
-        setUser(firebaseUser);
-      } else {
-        setIsAuthenticated(false);
-        setUser(null);
+    // Check if user is logged in
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          const response = await api.getProfile();
+          setUser(response.data);
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
-    });
+    };
 
-    return () => unsubscribe();
+    checkAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      await firebaseAuthService.signIn(email, password);
-      setError(null);
-    } catch (err: any) {
-      setError(err.message);
-      throw err;
-    }
-  };
-
-  const signup = async (email: string, password: string, role: 'patient' | 'advocate' | 'provider' | 'admin', displayName: string) => {
-    try {
-      await firebaseAuthService.signUp(email, password, role, displayName);
-      setError(null);
-    } catch (err: any) {
-      setError(err.message);
-      throw err;
+      const response = await api.login({ email, password });
+      const token = response.data.token;
+      localStorage.setItem('authToken', token);
+      setUser(response.data.user);
+      return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
   };
 
   const logout = async () => {
     try {
-      await firebaseAuthService.signOut();
-      setError(null);
-    } catch (err: any) {
-      setError(err.message);
-      throw err;
+      localStorage.removeItem('authToken');
+      setUser(null);
+      return true;
+    } catch (error) {
+      console.error('Logout error:', error);
+      return false;
     }
-  };
-
-  const clearError = () => {
-    setError(null);
   };
 
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated,
-        isLoading,
         user,
         login,
-        signup,
         logout,
-        error,
-        clearError
+        isLoading
       }}
     >
       {children}
@@ -111,5 +91,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-export default AuthContext;

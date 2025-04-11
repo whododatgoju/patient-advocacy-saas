@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import React, { lazy, Suspense, useState, useEffect } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AccessibilityProvider } from './contexts/AccessibilityContext'
 import { ThemeProvider } from './contexts/ThemeContext'
@@ -10,7 +10,6 @@ import './styles/accessibility.css'
 import './styles/performance.css'
 import './styles/designTokens.css'
 import './styles/globalTheme.css'
-import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isRunningStandalone } from './pwaUtils'
 
@@ -39,19 +38,26 @@ const LoadingSpinner = () => (
 
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   
+  // Development bypass mode - set to true to skip login
+  const DEV_BYPASS = true;
+
   // Display loading state while auth state is being determined
   if (isLoading) {
     return <LoadingSpinner />;
   }
   
-  // Redirect to login if not authenticated
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+  // In development mode, allow access without login
+  if (DEV_BYPASS) {
+    return children;
   }
   
-  // Render children if authenticated
+  // Redirect to login if not authenticated
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
   return children;
 };
 
@@ -116,27 +122,38 @@ const KeyboardNavigation: React.FC = () => {
 };
 
 // Error Boundary component
-const ErrorBoundary: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [hasError, setHasError] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    if (hasError) {
-      console.error('ErrorBoundary caught error:', error);
-    }
-  }, [hasError, error]);
-
-  if (hasError) {
-    return (
-      <div className="error-boundary">
-        <h2>Something went wrong</h2>
-        <button onClick={() => window.location.reload()}>Try again</button>
-      </div>
-    );
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
   }
 
-  return <>{children}</>;
-};
+  static getDerivedStateFromError(error: Error) {
+    // Update state so the next render will show the fallback UI
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Log the error to an error reporting service
+    console.error('ErrorBoundary caught error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-boundary">
+          <h2>Something went wrong</h2>
+          <button onClick={() => window.location.reload()}>Try again</button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 function App() {
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);

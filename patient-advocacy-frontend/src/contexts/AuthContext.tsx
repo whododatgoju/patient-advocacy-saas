@@ -4,16 +4,16 @@
  */
 
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-import AuthService, { UserData, LoginCredentials, SignupData } from '../services/AuthService';
+import { firebaseAuthService, USER_ROLES } from '../firebaseAuth';
+import { User } from 'firebase/auth';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  user: UserData | null;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  signup: (userData: SignupData) => Promise<void>;
-  logout: () => void;
-  updateUser: (updatedUserData: UserData) => void;
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, role: 'patient' | 'advocate' | 'provider' | 'admin', displayName: string) => Promise<void>;
+  logout: () => Promise<void>;
   error: string | null;
   clearError: () => void;
 }
@@ -25,8 +25,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   login: async () => {},
   signup: async () => {},
-  logout: () => {},
-  updateUser: () => {},
+  logout: async () => {},
   error: null,
   clearError: () => {},
 });
@@ -34,61 +33,53 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<UserData | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if user is logged in on mount
-    const checkAuth = async () => {
-      try {
-        const currentUser = AuthService.getCurrentUser();
-        if (currentUser) {
-          setIsAuthenticated(true);
-          setUser(currentUser.data.user);
-        }
-      } catch (err) {
-        console.error('Error checking auth:', err);
-      } finally {
-        setIsLoading(false);
+    // Listen for auth state changes
+    const unsubscribe = firebaseAuthService.onAuthStateChanged((firebaseUser) => {
+      if (firebaseUser) {
+        setIsAuthenticated(true);
+        setUser(firebaseUser);
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
       }
-    };
+      setIsLoading(false);
+    });
 
-    checkAuth();
+    return () => unsubscribe();
   }, []);
 
-  const login = async (credentials: LoginCredentials) => {
+  const login = async (email: string, password: string) => {
     try {
-      const response = await AuthService.login(credentials);
-      setIsAuthenticated(true);
-      setUser(response.data.user);
+      await firebaseAuthService.signIn(email, password);
       setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+    } catch (err: any) {
+      setError(err.message);
       throw err;
     }
   };
 
-  const signup = async (userData: SignupData) => {
+  const signup = async (email: string, password: string, role: 'patient' | 'advocate' | 'provider' | 'admin', displayName: string) => {
     try {
-      const response = await AuthService.signup(userData);
-      setIsAuthenticated(true);
-      setUser(response.data.user);
+      await firebaseAuthService.signUp(email, password, role, displayName);
       setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signup failed');
+    } catch (err: any) {
+      setError(err.message);
       throw err;
     }
   };
 
-  const logout = () => {
-    AuthService.logout();
-    setIsAuthenticated(false);
-    setUser(null);
-    setError(null);
-  };
-
-  const updateUser = (updatedUserData: UserData) => {
-    setUser(updatedUserData);
+  const logout = async () => {
+    try {
+      await firebaseAuthService.signOut();
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    }
   };
 
   const clearError = () => {
@@ -104,9 +95,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         signup,
         logout,
-        updateUser,
         error,
-        clearError,
+        clearError
       }}
     >
       {children}

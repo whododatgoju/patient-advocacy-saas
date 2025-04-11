@@ -32,7 +32,7 @@ interface File {
   name: string;
 }
 
-export default {
+export const UserService = {
   /**
    * Login to the application
    * @param credentials User credentials
